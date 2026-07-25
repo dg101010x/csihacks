@@ -1,0 +1,63 @@
+{
+  "release_id": "mini_20260725_122238",
+  "model": {
+    "name": "relieffm_mini",
+    "version": "0.1.0",
+    "parameter_count": 59641666,
+    "contract_version": "1.0.0",
+    "lifecycle": "shadow",
+    "supported_horizons": [60],
+    "maximum_scenarios": 64,
+    "currency": "USD"
+  },
+  "serving_artifacts": {
+    "checkpoint_directory": "gs://cerebrum-research-relieffm/runs/mini_20260725_122238/checkpoint",
+    "checkpoint_metadata": {
+      "uri": "gs://cerebrum-research-relieffm/runs/mini_20260725_122238/checkpoint/checkpoint_meta.json",
+      "size_bytes": 2468,
+      "sha256": "479b22c00c7979a4587df9254abbff63da083941aacc721efc178fd54d3b7334"
+    },
+    "model_weights": {
+      "uri": "gs://cerebrum-research-relieffm/runs/mini_20260725_122238/checkpoint/model.safetensors",
+      "size_bytes": 238588688,
+      "sha256": "1547b75758b670f7e8cf233a34d0dac91bcdaf4b59991e148f39c0cee247e00c"
+    }
+  },
+  "training": {
+    "project": "cerebrum-research",
+    "zone": "us-east1-b",
+    "accelerator": "1x NVIDIA L4",
+    "households": 25000,
+    "epochs": 12,
+    "steps": 7524,
+    "skipped_nonfinite_steps": 0,
+    "training_seconds": 7281.924872636795,
+    "dataset_version": "relief_data_0.1.0",
+    "full_run_uri": "gs://cerebrum-research-relieffm/runs/mini_20260725_122238"
+  },
+  "evaluation": {
+    "households": 1500,
+    "scenarios": 16,
+    "horizon_days": 60,
+    "median_scenario_balance_mae_cents": 27015.453125,
+    "seasonal_baseline_balance_mae_cents": 61410.44848888889,
+    "distress_30d_brier": 0.02742024902683472,
+    "gbm_distress_30d_brier": 0.0014184067060121288,
+    "false_reassurance_rate": 0.009193054136874362,
+    "intervention_direction_accuracy_oracle": 0.548,
+    "report_uri": "gs://cerebrum-research-relieffm/runs/mini_20260725_122238/eval_report.json",
+    "report_sha256": "ecda1d0a2652e7c8c08b958d582066ad331dac72af6baf57c5c8e546a64fb483"
+  },
+  "integration_policy": {
+    "mode": "shadow_only",
+    "deterministic_fallback_required": true,
+    "consumer_facing_default_allowed": false,
+    "financial_execution_allowed": false,
+    "notes": [
+      "The trajectory model beat the seasonal balance baseline.",
+      "The distress head did not beat the gradient-boosted baseline.",
+      "Intervention direction accuracy is an oracle metric and only slightly above chance.",
+      "Calibration, fairness, robustness, privacy, and live shadow testing are incomplete."
+    ]
+  }
+}

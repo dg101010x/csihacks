@@ -1,0 +1,301 @@
+{
+  "$defs": {
+    "DailySummary": {
+      "additionalProperties": false,
+      "properties": {
+        "balance_p10_cents": {
+          "title": "Balance P10 Cents",
+          "type": "integer"
+        },
+        "balance_p50_cents": {
+          "title": "Balance P50 Cents",
+          "type": "integer"
+        },
+        "balance_p90_cents": {
+          "title": "Balance P90 Cents",
+          "type": "integer"
+        },
+        "date": {
+          "format": "date-time",
+          "title": "Date",
+          "type": "string"
+        },
+        "inflow_p50_cents": {
+          "title": "Inflow P50 Cents",
+          "type": "integer"
+        },
+        "outflow_p50_cents": {
+          "title": "Outflow P50 Cents",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "date",
+        "balance_p10_cents",
+        "balance_p50_cents",
+        "balance_p90_cents",
+        "inflow_p50_cents",
+        "outflow_p50_cents"
+      ],
+      "title": "DailySummary",
+      "type": "object"
+    },
+    "DistressProbabilities": {
+      "additionalProperties": false,
+      "properties": {
+        "essential_reserve_violation": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Essential Reserve Violation",
+          "type": "number"
+        },
+        "missed_obligation": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Missed Obligation",
+          "type": "number"
+        },
+        "negative_balance": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Negative Balance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "negative_balance",
+        "essential_reserve_violation",
+        "missed_obligation"
+      ],
+      "title": "DistressProbabilities",
+      "type": "object"
+    },
+    "ModelLifecycleState": {
+      "enum": [
+        "experimental",
+        "candidate",
+        "shadow",
+        "limited",
+        "active",
+        "deprecated",
+        "retired"
+      ],
+      "title": "ModelLifecycleState",
+      "type": "string"
+    },
+    "ModelMetadataV1": {
+      "additionalProperties": false,
+      "properties": {
+        "calibration_version": {
+          "title": "Calibration Version",
+          "type": "string"
+        },
+        "contract_versions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Contract Versions",
+          "type": "array"
+        },
+        "intended_use": {
+          "default": "household cash flow trajectory forecasting",
+          "title": "Intended Use",
+          "type": "string"
+        },
+        "maximum_scenarios": {
+          "default": 32,
+          "title": "Maximum Scenarios",
+          "type": "integer"
+        },
+        "model_family": {
+          "default": "relieffm",
+          "title": "Model Family",
+          "type": "string"
+        },
+        "model_name": {
+          "title": "Model Name",
+          "type": "string"
+        },
+        "model_size": {
+          "default": "nano",
+          "title": "Model Size",
+          "type": "string"
+        },
+        "model_version": {
+          "title": "Model Version",
+          "type": "string"
+        },
+        "prohibited_use": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Prohibited Use",
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/$defs/ModelLifecycleState",
+          "default": "experimental"
+        },
+        "supported_horizons": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Supported Horizons",
+          "type": "array"
+        },
+        "training_data_version": {
+          "title": "Training Data Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model_name",
+        "model_version",
+        "training_data_version",
+        "calibration_version"
+      ],
+      "title": "ModelMetadataV1",
+      "type": "object"
+    },
+    "ReasonFactor": {
+      "additionalProperties": false,
+      "properties": {
+        "contribution": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Contribution",
+          "type": "number"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "contribution"
+      ],
+      "title": "ReasonFactor",
+      "type": "object"
+    },
+    "ScenarioTrajectory": {
+      "additionalProperties": false,
+      "properties": {
+        "accounting_valid": {
+          "default": true,
+          "title": "Accounting Valid",
+          "type": "boolean"
+        },
+        "daily_balances_cents": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Daily Balances Cents",
+          "type": "array"
+        },
+        "scenario_id": {
+          "title": "Scenario Id",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "scenario_id",
+        "daily_balances_cents"
+      ],
+      "title": "ScenarioTrajectory",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "contract_version": {
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "daily_summary": {
+      "items": {
+        "$ref": "#/$defs/DailySummary"
+      },
+      "title": "Daily Summary",
+      "type": "array"
+    },
+    "distress_probabilities": {
+      "$ref": "#/$defs/DistressProbabilities"
+    },
+    "forecast_id": {
+      "title": "Forecast Id",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "is_stale": {
+      "default": false,
+      "title": "Is Stale",
+      "type": "boolean"
+    },
+    "model_metadata": {
+      "$ref": "#/$defs/ModelMetadataV1"
+    },
+    "provider": {
+      "default": "relieffm",
+      "title": "Provider",
+      "type": "string"
+    },
+    "provider_version": {
+      "title": "Provider Version",
+      "type": "string"
+    },
+    "reason_factors": {
+      "items": {
+        "$ref": "#/$defs/ReasonFactor"
+      },
+      "title": "Reason Factors",
+      "type": "array"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "trajectories": {
+      "items": {
+        "$ref": "#/$defs/ScenarioTrajectory"
+      },
+      "title": "Trajectories",
+      "type": "array"
+    },
+    "valid_until": {
+      "format": "date-time",
+      "title": "Valid Until",
+      "type": "string"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "contract_version",
+    "request_id",
+    "forecast_id",
+    "provider_version",
+    "generated_at",
+    "valid_until",
+    "confidence",
+    "distress_probabilities",
+    "model_metadata"
+  ],
+  "title": "ForecastResponseV1",
+  "type": "object"
+}

@@ -28,7 +28,7 @@ The point isn't a prettier spending chart. It's turning "I have a bad feeling ab
 Relief is split into two halves that talk to each other through a strict versioned contract, so either side can be rebuilt without breaking the other.
 
 **The model side — ReliefFM**
-A transformer-based model trained on financial event sequences (think obligations, income, transfers — not just raw transaction text). It doesn't touch your money or make decisions. It forecasts trajectories and estimates risk, that's it. Three sizes exist depending on how much compute we've got: Nano (hackathon-scale, ~8-15M params), Mini, and Base.
+A transformer-based model trained on financial event sequences (think obligations, income, transfers — not just raw transaction text). It doesn't touch your money or make decisions. It forecasts trajectories and estimates risk, that's it. The implemented sizes are Nano (6.5M parameters), Mini (59.6M, trained), and Flash (606M, training-ready).
 
 **The platform side**
 Everything that actually runs the product: the ledger, obligation detection, the deterministic cash-flow engine (a rules-based fallback that works even if the model is down), the intervention engine, approval workflows, and the interface itself.
@@ -83,6 +83,11 @@ relief/
 
 `packages/relief_contracts` is the one directory both teams have to agree on before touching. Everything else is owned by whoever's building it.
 
+This checkout currently contains the complete Plan One implementation
+under [`relieffm/`](relieffm/). The Plan Two app is developed separately
+and connects only through the generated contract/OpenAPI bundle in
+[`relieffm/integration/`](relieffm/integration/).
+
 ## Stack
 
 - **Frontend:** Next.js (App Router), React, TypeScript, Tailwind, shadcn, TanStack Query, Zod, Recharts/ECharts
@@ -97,35 +102,40 @@ Money is handled as integer cents everywhere in the contracts. No floats near an
 
 Sarah's got $2,480 in checking. She's expecting a $2,100 paycheck on the 31st, but rent ($1,450), an auto payment ($240), and a subscription renewal ($15.99) all land on the 27th and 28th — before that paycheck arrives. Drop her expected paycheck to $1,720 in Scenario Lab and watch Relief catch the collision, explain exactly which obligations caused it, and hand back three ranked ways to fix it — split the auto payment, pause the subscription, or pull from a reserve account — each with a modeled cost and outcome. Approve one, watch it move through provider review, and see the whole thing show up in the audit log. Takes under two minutes end to end.
 
-## Running it locally
+## Running ReliefFM locally
 
 ```bash
 git clone <repo-url>
-cd relief
-pnpm install          # frontend + shared packages
-pip install -r requirements.txt   # backend + ml
-
-cp .env.example .env
-# set FORECAST_PROVIDER=mock to start without any backend at all
-
-pnpm dev              # frontend
-uvicorn apps.api.main:app --reload   # backend
+cd csihacks/relieffm
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+pytest tests packages/relief_contracts/tests -q
 ```
 
-Start with `FORECAST_PROVIDER=mock` — the whole demo works off static fixtures before you connect anything real. Flip it to `deterministic` once the ledger and obligation detection are wired up, and `relieffm` once the model service is actually running.
+The trained checkpoint is stored in GCS rather than Git. Follow
+[`relieffm/integration/README.md`](relieffm/integration/README.md) to pull
+and verify it, start the four-endpoint API, and connect Plan Two in shadow
+mode. Plan Two should still start with `FORECAST_PROVIDER=mock`, then
+`deterministic`; ReliefFM runs beside the deterministic provider until all
+activation gates pass.
 
 ## Where things stand
 
 - [x] Shared contracts (`relief_contracts`)
-- [x] Deterministic cash-flow engine
-- [x] Obligation detection (recurring transaction clustering)
-- [x] Frontend: Command Center, Timeline, Scenario Lab, Interventions
-- [ ] LangGraph approval workflow — in progress
-- [ ] ReliefFM Nano — training against synthetic households
-- [ ] Provider adapter (Plaid Sandbox) — wired, not stress-tested
-- [ ] Audit replay UI
+- [x] ReliefSim + deterministic known-event reconciliation
+- [x] ReliefFM Nano trained and evaluated
+- [x] ReliefFM Mini trained and evaluated on 25,000 synthetic households
+- [x] Mini release manifest, JSON Schemas, OpenAPI, and real HTTP fixtures
+- [x] Flash 606M architecture and GPU preflight code
+- [ ] Plan Two shadow connection and deterministic comparison logging
+- [ ] Calibration, fairness, robustness, privacy, and live latency gates
+- [ ] Flash training
 
-Currently everything demoable runs on the deterministic engine + synthetic Wells Fargo data. ReliefFM is real but running in shadow mode — it's not driving anything user-facing yet.
+Mini beats the seasonal balance baseline, but its distress head loses to
+the gradient-boosted baseline and its intervention evidence is still
+weak. ReliefFM is therefore a shadow-only provider and must not drive a
+user-facing decision yet.
 
 ## A note on the data
 
