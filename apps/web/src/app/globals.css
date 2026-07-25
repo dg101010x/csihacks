@@ -3,6 +3,16 @@
 @import "shadcn/tailwind.css";
 @import "@relief/design-system/tokens.css";
 
+/*
+ * Tailwind v4's automatic content detection only scans this app's own
+ * source tree. @relief/design-system is a sibling workspace package (not
+ * copied in, symlinked via pnpm) whose components use Tailwind utility
+ * classes of their own — without this, classes used only inside the
+ * design system (e.g. rounded-full, animate-spin) never make it into the
+ * generated CSS and those components render unstyled.
+ */
+@source "../../../../packages/design_system/src/**/*.{ts,tsx}";
+
 @custom-variant dark (&:is(.dark *));
 
 /*

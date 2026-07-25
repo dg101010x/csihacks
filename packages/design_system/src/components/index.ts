@@ -1,3 +1,10 @@
-// Phase A component primitives (Section 28) are added here: Button, form
-// controls, Card system, status indicators, empty states, loading states.
-export {};
+export * from "./button";
+export * from "./input";
+export * from "./textarea";
+export * from "./label";
+export * from "./checkbox";
+export * from "./card";
+export * from "./status-badge";
+export * from "./empty-state";
+export * from "./skeleton";
+export * from "./loading-state";

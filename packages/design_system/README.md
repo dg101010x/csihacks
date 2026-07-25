@@ -14,8 +14,18 @@ component primitives and accessibility helpers (Section 18).
 - `src/accessibility.ts` — `StatusDescriptor` (forces every status to carry
   both a label and an icon, Section 19 rules 7-8), `APPROVAL_PROBABILITY_UNAVAILABLE_LABEL`
   (Section 21.4), `prefersReducedMotion()`.
-- `src/components/` — Phase A primitives (Button, form controls, Card system,
-  status indicators, empty/loading states) with Storybook stories.
+- `src/components/` — Phase A primitives, each with a Storybook story and,
+  where behavior matters, a Vitest test: `Button` (variants, sizes, loading),
+  `Input` / `Textarea` / `Label` + `FormField` / `Checkbox`, `Card` system
+  (`Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`,
+  `CardFooter`), `StatusBadge` (renders a `StatusDescriptor`), `EmptyState`,
+  `Skeleton` / `LoadingState`.
+
+Consuming apps must add an explicit Tailwind `@source` pointing at
+`packages/design_system/src/**/*.{ts,tsx}` — Tailwind v4's automatic content
+detection only scans the app's own tree, not sibling workspace packages, so
+without it classes used only inside these components (e.g. `rounded-full`,
+`animate-spin`) never reach the generated CSS. See `apps/web/src/app/globals.css`.
 
 ## Color rules (Section 19)
 
