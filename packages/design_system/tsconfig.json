@@ -1,0 +1,9 @@
+{
+  "extends": "@relief/typescript-config/base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["dom", "dom.iterable", "ES2022"],
+    "outDir": "dist"
+  },
+  "include": ["src", "tokens", "tailwind-preset.ts", ".storybook"]
+}
