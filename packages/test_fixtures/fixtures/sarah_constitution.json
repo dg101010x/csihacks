@@ -1,0 +1,54 @@
+{
+  "rules": [
+    {
+      "rule_id": "rule_protected_categories_01",
+      "status": "active",
+      "raw_text": "Protect housing, groceries, medicine, and transportation. Never extend a loan if it adds interest. Ask me before pausing any subscription.",
+      "trigger": "Any candidate intervention affecting an obligation in a protected category, adding loan interest, or pausing a subscription.",
+      "scope": ["housing", "groceries", "medicine", "transportation", "subscriptions", "loans"],
+      "permitted_actions": ["split_payment", "move_due_date", "temporary_reserve_buffer"],
+      "prohibited_actions": ["term_extension_with_interest", "cancel_essential_category"],
+      "approval_requirement": "always_ask",
+      "maximum_monetary_impact_cents": 0,
+      "expiration": null,
+      "priority": 1,
+      "exceptions": [],
+      "confidence": 0.94,
+      "created_at": "2026-06-01T09:00:00Z"
+    }
+  ],
+  "starter_rules": [
+    {
+      "rule_id": "starter_rule_subscription_buffer",
+      "status": "draft",
+      "raw_text": "You may pause subscriptions under $25.00 automatically when my essential reserve is at risk.",
+      "trigger": "Essential reserve violation projected and at least one active subscription under $25.00.",
+      "scope": ["subscriptions"],
+      "permitted_actions": ["pause_subscription"],
+      "prohibited_actions": [],
+      "approval_requirement": "none",
+      "maximum_monetary_impact_cents": 2500,
+      "expiration": null,
+      "priority": 5,
+      "exceptions": [],
+      "confidence": 0.88,
+      "created_at": "2026-07-25T16:00:00Z"
+    },
+    {
+      "rule_id": "starter_rule_provider_negotiation",
+      "status": "draft",
+      "raw_text": "Allow Relief to request provider negotiation on my behalf up to $50.00 in added flexibility, but always ask before approving.",
+      "trigger": "A candidate intervention requires provider approval and stays within the $50.00 limit.",
+      "scope": ["loans", "rent"],
+      "permitted_actions": ["split_payment", "move_due_date", "hardship_request"],
+      "prohibited_actions": ["term_extension_with_interest"],
+      "approval_requirement": "always_ask",
+      "maximum_monetary_impact_cents": 5000,
+      "expiration": null,
+      "priority": 10,
+      "exceptions": [],
+      "confidence": 0.81,
+      "created_at": "2026-07-25T16:00:00Z"
+    }
+  ]
+}

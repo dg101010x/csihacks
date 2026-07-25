@@ -1,0 +1,76 @@
+/**
+ * CSS custom properties mirroring tokens/*.ts (Section 18-20). Hand-kept in
+ * sync with the TS tokens — this file is what apps/web actually imports into
+ * globals.css; the TS tokens are for JS-side consumers (charts, JS-driven
+ * animation, Storybook docs).
+ */
+:root {
+  /* Color tokens (Section 19) */
+  --color-deep-ink: #0B1220;
+  --color-porcelain: #F7F8F5;
+  --color-trust-blue: #315EFB;
+  --color-relief-mint: #24B99A;
+  --color-signal-amber: #E9A93B;
+  --color-risk-coral: #D95C5C;
+  --color-slate: #667085;
+  --color-surface: #FFFFFF;
+  --color-border: #E4E7EC;
+
+  /* Semantic aliases */
+  --color-background: var(--color-porcelain);
+  --color-foreground: var(--color-deep-ink);
+  --color-primary: var(--color-trust-blue);
+  --color-primary-foreground: #FFFFFF;
+  --color-muted-foreground: var(--color-slate);
+  --color-positive: var(--color-relief-mint);
+  --color-caution: var(--color-signal-amber);
+  --color-risk: var(--color-risk-coral);
+
+  /* Typography (Section 20) */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Borders */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px 0 rgb(11 18 32 / 0.04);
+  --shadow-md: 0 2px 8px -2px rgb(11 18 32 / 0.08), 0 1px 2px -1px rgb(11 18 32 / 0.04);
+  --shadow-lg: 0 8px 24px -4px rgb(11 18 32 / 0.12), 0 2px 6px -2px rgb(11 18 32 / 0.06);
+  --shadow-overlay: 0 16px 48px -8px rgb(11 18 32 / 0.20);
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 360ms;
+  --duration-timeline-recalculate: 480ms;
+  --easing-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+    --duration-timeline-recalculate: 0ms;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-background: var(--color-deep-ink);
+  --color-foreground: var(--color-porcelain);
+  --color-surface: #111A2B;
+  --color-border: #24304A;
+}

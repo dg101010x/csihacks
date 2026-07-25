@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "relief-explanations"
+version = "0.1.0"
+description = "Relief Plan Two — explanation layer (Section 63/67)."
+requires-python = ">=3.9"
+dependencies = ["relief-contracts", "relief-resilience", "relief-interventions"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["relief_explanations"]

@@ -1,0 +1,54 @@
+# Relief backend — local/staging composition (Section 20).
+# Run from the repo root: docker compose -f infrastructure/deployment/docker-compose.yml up
+#
+# apps/api's db.py already reads DATABASE_URL and creates every module's
+# tables on startup (create_all_tables()) — no separate migration step
+# exists yet (tracked as a real gap: Alembic or similar is needed before
+# this is safe to run against a database with data already in it, since
+# create_all only adds missing tables and never alters existing ones).
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: relief
+      POSTGRES_PASSWORD: relief
+      POSTGRES_DB: relief
+    volumes:
+      - relief_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U relief"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ../..
+      dockerfile: infrastructure/containers/api.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://relief:relief@db:5432/relief
+      RELIEF_API_KEY: ${RELIEF_API_KEY:-}
+      RELIEF_ALLOWED_ORIGINS: ${RELIEF_ALLOWED_ORIGINS:-http://localhost:3000}
+      RELIEF_RATE_LIMIT_PER_MINUTE: ${RELIEF_RATE_LIMIT_PER_MINUTE:-120}
+      FORECAST_PROVIDER: ${FORECAST_PROVIDER:-deterministic}
+      RELIEFFM_INFERENCE_URL: ${RELIEFFM_INFERENCE_URL:-}
+      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID:-}
+      PLAID_SECRET: ${PLAID_SECRET:-}
+      PLAID_ENV: ${PLAID_ENV:-sandbox}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  relief_db_data:

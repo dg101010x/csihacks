@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relief.dev/schemas/financial_event.v1.schema.json",
+  "title": "FinancialEventV1",
+  "type": "object",
+  "required": [
+    "contract_version", "event_id", "household_id", "account_id", "source",
+    "source_event_id", "event_type", "event_status", "occurred_at", "effective_at",
+    "amount_cents", "currency", "direction", "merchant_name", "merchant_category",
+    "obligation_id", "is_recurring", "is_pending", "metadata"
+  ],
+  "properties": {
+    "contract_version": { "$ref": "definitions.v1.schema.json#/$defs/ContractVersion" },
+    "event_id": { "type": "string" },
+    "household_id": { "type": "string" },
+    "account_id": { "type": "string" },
+    "source": { "type": "string" },
+    "source_event_id": { "type": "string" },
+    "event_type": { "type": "string" },
+    "event_status": { "enum": ["scheduled", "pending", "posted", "cancelled", "corrected"] },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "effective_at": { "type": "string", "format": "date-time" },
+    "amount_cents": { "type": "integer", "minimum": 0 },
+    "currency": { "$ref": "definitions.v1.schema.json#/$defs/Currency" },
+    "direction": { "enum": ["inflow", "outflow"] },
+    "merchant_name": { "type": ["string", "null"] },
+    "merchant_category": { "type": ["string", "null"] },
+    "obligation_id": { "type": ["string", "null"] },
+    "is_recurring": { "type": "boolean" },
+    "is_pending": { "type": "boolean" },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

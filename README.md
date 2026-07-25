@@ -4,7 +4,7 @@ Financial safety infrastructure, not another budgeting app.
 
 Relief sits between your accounts, your bills, your income, and your bank — watching for the moment those things are about to collide, and doing something about it before they do. Most finance apps show you what already happened to your money. Relief tries to tell you what's *about* to happen, and gives you a way to change the outcome before it hits your balance.
 
-Built for [Hackathon Name] by a team of six engineers spanning cloud infra, data engineering, and AI.
+Built for [Hackathon Name] by a team spanning cloud infra, data engineering, and AI.
 
 ## Why we built this
 
@@ -25,13 +25,13 @@ The point isn't a prettier spending chart. It's turning "I have a bad feeling ab
 
 ## How it's put together
 
-Relief is split into two halves that talk to each other through a strict versioned contract, so either side can be rebuilt without breaking the other.
+Relief is split into two halves that talk to each other through a strict versioned contract (`packages/relief_contracts`), so either side can be rebuilt without breaking the other.
 
-**The model side — ReliefFM**
-A transformer-based model trained on financial event sequences (think obligations, income, transfers — not just raw transaction text). It doesn't touch your money or make decisions. It forecasts trajectories and estimates risk, that's it. The implemented sizes are Nano (6.5M parameters), Mini (59.6M, trained), and Flash (606M, training-ready).
+**The model side — ReliefFM (Plan One)**
+A transformer-based model trained on financial event sequences (obligations, income, transfers — not raw transaction text). It doesn't touch your money or make decisions. It forecasts trajectories and estimates risk, that's it. The implemented sizes are Nano (6.5M parameters), Mini (59.6M, trained), and Flash (606M, training-ready) — roughly 670M parameters combined. Lives in [`relieffm/`](relieffm/).
 
-**The platform side**
-Everything that actually runs the product: the ledger, obligation detection, the deterministic cash-flow engine (a rules-based fallback that works even if the model is down), the intervention engine, approval workflows, and the interface itself.
+**The platform side — Plan Two**
+Everything that actually runs the product: the ledger, obligation detection, the deterministic cash-flow engine (a rules-based fallback that works even if the model is down), resilience/elasticity scoring, the intervention engine, the staged approval workflow, audit/replay, Plaid + Wells Fargo integrations, and the API/frontend serving all of it. See [`docs/architecture/relief_plan_two.md`](docs/architecture/relief_plan_two.md) for Plan Two's ownership boundaries and build order.
 
 ```
 Known financial state
@@ -57,86 +57,98 @@ FORECAST_PROVIDER=deterministic # rules-based fallback, always works
 FORECAST_PROVIDER=relieffm      # the actual model
 ```
 
+`services/model_gateway` is Plan Two's side of that switch — it dispatches to whichever provider is requested and falls back to `deterministic` with an explicit warning if `relieffm` is requested but unreachable, rather than failing the request.
+
 ## Repo layout
 
 ```
 relief/
   apps/
-    web/              # Next.js frontend
-    api/               # FastAPI backend
-    workflow_worker/    # LangGraph approval workflows
+    web/                # Next.js frontend
+    api/                 # FastAPI backend (Plan Two)
+    workflow_worker/      # staged approval state machine
   services/
-    model_gateway/       # platform's only door into the model
-    model_inference/      # model serving (owned by the model team)
+    model_gateway/         # Plan Two's only door into the model (mock/deterministic/relieffm dispatch)
+    model_inference/        # model serving (owned by the model team; not built in this checkout)
   packages/
-    relief_contracts/     # the shared contract — schemas, types, fixtures
+    relief_contracts/       # the shared contract — schemas, types, fixtures (both teams agree here first)
     design_system/
-    financial_math/
-  modules/
-    ledger/ obligations/ resilience/ elasticity/
-    interventions/ provider_policies/ consumer_constitution/
+    test_fixtures/
+  modules/                  # Plan Two business logic, each independently pip-installable
+    ledger/ recurring_detection/ obligations/ deterministic_forecast/
+    resilience/ elasticity/ interventions/ consumer_constitution/
     explanations/ audit/ integrations/
-  ml/
-    relieffm/ simulator/ training/ evaluation/
-  docs/
+  ml/                       # Plan Two's placeholder boundary for the model workstream
+  relieffm/                 # the complete Plan One implementation — model, training, evaluation
+  infrastructure/           # database, containers, deployment, monitoring
+  docs/                     # architecture, product, compliance, model_contracts, demo
 ```
 
-`packages/relief_contracts` is the one directory both teams have to agree on before touching. Everything else is owned by whoever's building it.
-
-This checkout currently contains the complete Plan One implementation
-under [`relieffm/`](relieffm/). The Plan Two app is developed separately
-and connects only through the generated contract/OpenAPI bundle in
-[`relieffm/integration/`](relieffm/integration/).
+`packages/relief_contracts` is the one directory both teams have to agree on before touching. Everything else is owned by whoever's building it — see `docs/architecture/relief_plan_two.md` for the exact boundary (Plan Two owns everything except `ml/` and `services/model_inference`).
 
 ## Stack
 
-- **Frontend:** Next.js (App Router), React, TypeScript, Tailwind, shadcn, TanStack Query, Zod, Recharts/ECharts
-- **Backend:** Python, FastAPI, Pydantic, SQLAlchemy, PostgreSQL, Redis
-- **Workflows/AI:** LangChain (explanations), LangGraph (durable approval workflows), LangSmith (tracing)
-- **Integrations:** Plaid Sandbox, synthetic Wells Fargo reference data
+- **Frontend:** Next.js (App Router), React, TypeScript, Tailwind, shadcn, TanStack Query, Zod
+- **Backend:** Python, FastAPI, Pydantic, SQLAlchemy — Postgres in production, SQLite for local dev
+- **Workflows/AI:** an explicit staged-approval state graph today; LangChain/LangGraph are the eventual seam for the explanation layer and a model-driven approval agent, not required for the platform to function
+- **Integrations:** Plaid Sandbox (real httpx client, not the SDK), synthetic Wells Fargo reference data
 - **Model:** PyTorch, transformer encoder-decoder over financial event sequences
 
 Money is handled as integer cents everywhere in the contracts. No floats near anything that touches a balance.
 
 ## The demo, in one paragraph
 
-Sarah's got $2,480 in checking. She's expecting a $2,100 paycheck on the 31st, but rent ($1,450), an auto payment ($240), and a subscription renewal ($15.99) all land on the 27th and 28th — before that paycheck arrives. Drop her expected paycheck to $1,720 in Scenario Lab and watch Relief catch the collision, explain exactly which obligations caused it, and hand back three ranked ways to fix it — split the auto payment, pause the subscription, or pull from a reserve account — each with a modeled cost and outcome. Approve one, watch it move through provider review, and see the whole thing show up in the audit log. Takes under two minutes end to end.
+Sarah's got $2,480 in checking. She's expecting a $2,100 paycheck on the 31st, but rent ($1,450), an auto payment ($240), and a subscription renewal ($15.99) all land on the 27th and 28th — before that paycheck arrives. Drop her expected paycheck to $1,720 in Scenario Lab and watch Relief catch the collision, explain exactly which obligations caused it, and hand back ranked ways to fix it — split the auto payment, pause the subscription, or a provider hardship request — each with a modeled cost and outcome. Approve one, watch it move through provider review, and see the whole thing show up in the audit log. Takes under two minutes end to end.
 
-## Running ReliefFM locally
+## Running Plan Two (the platform) locally
 
 ```bash
-git clone <repo-url>
-cd csihacks/relieffm
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e packages/relief_contracts/python
+for m in modules/*/; do pip install -e "$m"; done
+pip install -e services/model_gateway -e apps/workflow_worker -e apps/api
+pytest -q                                    # 108 tests, everything above
+uvicorn app.main:app --app-dir apps/api      # http://localhost:8000
+```
+
+Or via Docker: `docker compose -f infrastructure/deployment/docker-compose.yml up` (Postgres + the API, see that file for env vars).
+
+Frontend:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+## Running ReliefFM (the model) locally
+
+```bash
+cd relieffm
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
 pytest tests packages/relief_contracts/tests -q
 ```
 
-The trained checkpoint is stored in GCS rather than Git. Follow
-[`relieffm/integration/README.md`](relieffm/integration/README.md) to pull
-and verify it, start the four-endpoint API, and connect Plan Two in shadow
-mode. Plan Two should still start with `FORECAST_PROVIDER=mock`, then
-`deterministic`; ReliefFM runs beside the deterministic provider until all
-activation gates pass.
+The trained checkpoint is stored in GCS rather than Git. Follow [`relieffm/integration/README.md`](relieffm/integration/README.md) to pull and verify it, start the four-endpoint API, and connect Plan Two in shadow mode. Plan Two should still start with `FORECAST_PROVIDER=mock`, then `deterministic`; ReliefFM runs beside the deterministic provider until all activation gates pass.
 
 ## Where things stand
 
 - [x] Shared contracts (`relief_contracts`)
+- [x] Plan Two: every backend module (ledger through deployment infra), apps/api wired end-to-end, 108 tests passing
 - [x] ReliefSim + deterministic known-event reconciliation
 - [x] ReliefFM Nano trained and evaluated
 - [x] ReliefFM Mini trained and evaluated on 25,000 synthetic households
 - [x] Mini release manifest, JSON Schemas, OpenAPI, and real HTTP fixtures
 - [x] Flash 606M architecture and GPU preflight code
-- [ ] Plan Two shadow connection and deterministic comparison logging
+- [ ] Plan Two ↔ ReliefFM shadow connection and deterministic comparison logging (`services/model_gateway` is ready on Plan Two's side; wiring up a live `RELIEFFM_INFERENCE_URL` against `relieffm/integration/` is next)
 - [ ] Calibration, fairness, robustness, privacy, and live latency gates
 - [ ] Flash training
+- [ ] Real DB migrations (Alembic), metrics/alerting — see `infrastructure/database/README.md` and `infrastructure/monitoring/README.md`
 
-Mini beats the seasonal balance baseline, but its distress head loses to
-the gradient-boosted baseline and its intervention evidence is still
-weak. ReliefFM is therefore a shadow-only provider and must not drive a
-user-facing decision yet.
+Mini beats the seasonal balance baseline, but its distress head loses to the gradient-boosted baseline and its intervention evidence is still weak. ReliefFM is therefore a shadow-only provider and must not drive a user-facing decision yet — Plan Two's deterministic engine is the one actually serving forecasts today.
 
 ## A note on the data
 
-Everything here runs on synthetic data — a made-up "Wells Fargo" formatted dataset and a household simulator we built ourselves (ReliefSim). No real bank, no real user, no real money moves. It's built to behave like the real thing would, but treat every number in this demo as fictional until stated otherwise.
+Everything here runs on synthetic data — a made-up "Wells Fargo" formatted dataset and a household simulator (ReliefSim). No real bank, no real user, no real money moves. It's built to behave like the real thing would, but treat every number in this demo as fictional until stated otherwise.

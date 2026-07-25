@@ -1,0 +1,17 @@
+{
+  "name": "relief",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Relief Plan Two — platform, engine, front end, and infrastructure monorepo.",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "storybook": "pnpm --filter design_system storybook"
+  }
+}

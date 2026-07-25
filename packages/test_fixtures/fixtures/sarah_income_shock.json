@@ -1,0 +1,346 @@
+{
+  "trigger_event": {
+    "contract_version": "1.0.0",
+    "event_id": "evt_income_hh01_07",
+    "household_id": "hh_01",
+    "account_id": "acct_01",
+    "source": "synthetic_wells_fargo",
+    "source_event_id": "source_income_07",
+    "event_type": "paycheck",
+    "event_status": "corrected",
+    "occurred_at": "2026-07-24T08:00:00Z",
+    "effective_at": "2026-07-24T08:00:00Z",
+    "amount_cents": 172000,
+    "currency": "USD",
+    "direction": "inflow",
+    "merchant_name": "Riverstone Logistics Payroll",
+    "merchant_category": "payroll",
+    "obligation_id": null,
+    "is_recurring": true,
+    "is_pending": false,
+    "metadata": {
+      "demonstration_note": "Shock simulator (Section 16.3): paycheck reduced by $380.00 from the baseline $2,100.00.",
+      "original_amount_cents": 210000,
+      "shock_delta_cents": -38000
+    }
+  },
+  "household_snapshot": {
+    "contract_version": "1.0.0",
+    "snapshot_id": "snap_sarah_shock",
+    "household_id": "hh_01",
+    "generated_at": "2026-07-25T16:02:00Z",
+    "timezone": "America/Los_Angeles",
+    "currency": "USD",
+    "accounts": [
+      {
+        "account_id": "acct_01",
+        "provider": "synthetic_wells_fargo",
+        "account_type": "checking",
+        "account_subtype": null,
+        "display_name": "Everyday Checking",
+        "current_balance_cents": 210000,
+        "available_balance_cents": 210000,
+        "balance_updated_at": "2026-07-25T16:01:00Z",
+        "data_status": "current",
+        "is_simulated": true
+      }
+    ],
+    "obligations": [
+      {
+        "obligation_id": "obl_rent_01",
+        "provider_id": "prov_meridian_realty",
+        "obligation_type": "rent",
+        "display_name": "Rent — Meridian Apartments",
+        "principal_balance_cents": null,
+        "scheduled_amount_cents": 145000,
+        "next_due_at": "2026-07-27T09:00:00Z",
+        "recurrence_rule": "FREQ=MONTHLY",
+        "essentiality_score": 0.95,
+        "status": "active",
+        "source_confidence": 0.98,
+        "consumer_confirmed": true
+      },
+      {
+        "obligation_id": "obl_car_01",
+        "provider_id": "prov_auto_lender",
+        "obligation_type": "loan_payment",
+        "display_name": "Auto Loan",
+        "principal_balance_cents": 1240000,
+        "scheduled_amount_cents": 24000,
+        "next_due_at": "2026-07-27T09:00:00Z",
+        "recurrence_rule": "FREQ=MONTHLY",
+        "essentiality_score": 0.75,
+        "status": "active",
+        "source_confidence": 0.95,
+        "consumer_confirmed": true
+      },
+      {
+        "obligation_id": "obl_card_01",
+        "provider_id": "prov_card_co",
+        "obligation_type": "credit_card_minimum",
+        "display_name": "Card Co Visa — minimum payment",
+        "principal_balance_cents": 186500,
+        "scheduled_amount_cents": 7500,
+        "next_due_at": "2026-08-03T09:00:00Z",
+        "recurrence_rule": "FREQ=MONTHLY",
+        "essentiality_score": 0.4,
+        "status": "active",
+        "source_confidence": 0.9,
+        "consumer_confirmed": true
+      },
+      {
+        "obligation_id": "obl_streaming_01",
+        "provider_id": "prov_streamco",
+        "obligation_type": "subscription",
+        "display_name": "StreamCo Plus",
+        "principal_balance_cents": null,
+        "scheduled_amount_cents": 1599,
+        "next_due_at": "2026-07-28T09:00:00Z",
+        "recurrence_rule": "FREQ=MONTHLY",
+        "essentiality_score": 0.05,
+        "status": "active",
+        "source_confidence": 0.99,
+        "consumer_confirmed": true
+      }
+    ],
+    "recent_events": [
+      {
+        "contract_version": "1.0.0",
+        "event_id": "evt_income_hh01_07",
+        "household_id": "hh_01",
+        "account_id": "acct_01",
+        "source": "synthetic_wells_fargo",
+        "source_event_id": "source_income_07",
+        "event_type": "paycheck",
+        "event_status": "corrected",
+        "occurred_at": "2026-07-24T08:00:00Z",
+        "effective_at": "2026-07-24T08:00:00Z",
+        "amount_cents": 172000,
+        "currency": "USD",
+        "direction": "inflow",
+        "merchant_name": "Riverstone Logistics Payroll",
+        "merchant_category": "payroll",
+        "obligation_id": null,
+        "is_recurring": true,
+        "is_pending": false,
+        "metadata": {
+          "original_amount_cents": 210000,
+          "shock_delta_cents": -38000
+        }
+      }
+    ],
+    "known_future_events": [
+      {
+        "contract_version": "1.0.0",
+        "event_id": "evt_01",
+        "household_id": "hh_01",
+        "account_id": "acct_01",
+        "source": "synthetic_wells_fargo",
+        "source_event_id": "source_981",
+        "event_type": "scheduled_payment",
+        "event_status": "scheduled",
+        "occurred_at": "2026-07-27T09:00:00Z",
+        "effective_at": "2026-07-27T09:00:00Z",
+        "amount_cents": 24000,
+        "currency": "USD",
+        "direction": "outflow",
+        "merchant_name": "Auto Lender",
+        "merchant_category": "loan_payment",
+        "obligation_id": "obl_car_01",
+        "is_recurring": true,
+        "is_pending": false,
+        "metadata": {}
+      },
+      {
+        "contract_version": "1.0.0",
+        "event_id": "evt_rent_01",
+        "household_id": "hh_01",
+        "account_id": "acct_01",
+        "source": "synthetic_wells_fargo",
+        "source_event_id": "source_982",
+        "event_type": "scheduled_payment",
+        "event_status": "scheduled",
+        "occurred_at": "2026-07-27T09:00:00Z",
+        "effective_at": "2026-07-27T09:00:00Z",
+        "amount_cents": 145000,
+        "currency": "USD",
+        "direction": "outflow",
+        "merchant_name": "Meridian Realty",
+        "merchant_category": "rent",
+        "obligation_id": "obl_rent_01",
+        "is_recurring": true,
+        "is_pending": false,
+        "metadata": {}
+      },
+      {
+        "contract_version": "1.0.0",
+        "event_id": "evt_streaming_01",
+        "household_id": "hh_01",
+        "account_id": "acct_01",
+        "source": "synthetic_wells_fargo",
+        "source_event_id": "source_983",
+        "event_type": "scheduled_payment",
+        "event_status": "scheduled",
+        "occurred_at": "2026-07-28T09:00:00Z",
+        "effective_at": "2026-07-28T09:00:00Z",
+        "amount_cents": 1599,
+        "currency": "USD",
+        "direction": "outflow",
+        "merchant_name": "StreamCo",
+        "merchant_category": "subscription",
+        "obligation_id": "obl_streaming_01",
+        "is_recurring": true,
+        "is_pending": false,
+        "metadata": {}
+      },
+      {
+        "contract_version": "1.0.0",
+        "event_id": "evt_income_hh01_08",
+        "household_id": "hh_01",
+        "account_id": "acct_01",
+        "source": "synthetic_wells_fargo",
+        "source_event_id": "source_income_08",
+        "event_type": "paycheck",
+        "event_status": "scheduled",
+        "occurred_at": "2026-07-31T08:00:00Z",
+        "effective_at": "2026-07-31T08:00:00Z",
+        "amount_cents": 210000,
+        "currency": "USD",
+        "direction": "inflow",
+        "merchant_name": "Riverstone Logistics Payroll",
+        "merchant_category": "payroll",
+        "obligation_id": null,
+        "is_recurring": true,
+        "is_pending": false,
+        "metadata": {}
+      }
+    ],
+    "consumer_constitution": {
+      "version": 1,
+      "protected_categories": ["housing", "groceries", "medicine", "transportation"],
+      "allow_term_extension": true,
+      "maximum_added_interest_cents": 0,
+      "require_confirmation_for_subscriptions": true
+    },
+    "provider_capabilities": [
+      {
+        "provider_id": "prov_auto_lender",
+        "product_type": "auto_loan",
+        "action_type": "split_payment",
+        "eligibility_rule": "hardship_demonstrated",
+        "cost_rule": "no_added_fee",
+        "timing_rule": "within_current_billing_cycle",
+        "evidence_source": "simulated_demonstration_policy",
+        "effective_from": "2026-01-01T00:00:00Z",
+        "effective_until": null,
+        "is_simulated": true
+      }
+    ]
+  },
+  "forecast": {
+    "contract_version": "1.0.0",
+    "request_id": "forecast_req_sarah_shock",
+    "forecast_id": "forecast_sarah_shock",
+    "provider": "deterministic",
+    "provider_version": "1.0.0",
+    "generated_at": "2026-07-25T16:02:01Z",
+    "valid_until": "2026-07-25T17:02:01Z",
+    "confidence": 0.81,
+    "is_stale": false,
+    "warnings": [
+      "Income event evt_income_hh01_07 was retroactively reduced by $380.00 for this demonstration."
+    ],
+    "daily_summary": [
+      {
+        "event_date": "2026-07-27",
+        "median_ending_balance_cents": 41000,
+        "lower_ending_balance_cents": 33000,
+        "upper_ending_balance_cents": 47000,
+        "reserve_violation_probability": 0.81
+      },
+      {
+        "event_date": "2026-07-28",
+        "median_ending_balance_cents": 39401,
+        "lower_ending_balance_cents": 31401,
+        "upper_ending_balance_cents": 45401,
+        "reserve_violation_probability": 0.84
+      },
+      {
+        "event_date": "2026-07-31",
+        "median_ending_balance_cents": 249401,
+        "lower_ending_balance_cents": 241401,
+        "upper_ending_balance_cents": 255401,
+        "reserve_violation_probability": 0.02
+      }
+    ],
+    "trajectories": [
+      {
+        "scenario_index": 0,
+        "event_date": "2026-07-27",
+        "starting_balance_cents": 210000,
+        "inflow_cents": 0,
+        "outflow_cents": 169000,
+        "ending_balance_cents": 41000,
+        "essential_reserve_cents": 50000
+      },
+      {
+        "scenario_index": 0,
+        "event_date": "2026-07-28",
+        "starting_balance_cents": 41000,
+        "inflow_cents": 0,
+        "outflow_cents": 1599,
+        "ending_balance_cents": 39401,
+        "essential_reserve_cents": 50000
+      },
+      {
+        "scenario_index": 0,
+        "event_date": "2026-07-31",
+        "starting_balance_cents": 39401,
+        "inflow_cents": 210000,
+        "outflow_cents": 0,
+        "ending_balance_cents": 249401,
+        "essential_reserve_cents": 50000
+      }
+    ],
+    "distress_probabilities": {
+      "negative_balance": 0.18,
+      "essential_reserve_violation": 0.81,
+      "missed_obligation": 0.34
+    },
+    "reason_factors": [
+      {
+        "factor": "obligation_collision",
+        "weight": 0.6,
+        "description": "Rent ($1,450.00) and the auto loan payment ($240.00) are both due on 2026-07-27, consuming $1,690.00 in a single day."
+      },
+      {
+        "factor": "income_reduction",
+        "weight": 0.4,
+        "description": "The most recent paycheck arrived $380.00 below the household's typical amount."
+      }
+    ],
+    "model_metadata": null
+  },
+  "distress_summary": {
+    "first_reserve_violation_date": "2026-07-27",
+    "first_negative_balance_date": null,
+    "collision_group": ["obl_rent_01", "obl_car_01"]
+  },
+  "resilience_score": {
+    "version": "resilience-v1.0.0",
+    "overall": 54,
+    "confidence": 0.79,
+    "trend": "declining",
+    "components": [
+      { "key": "seven_day_liquidity_coverage", "label": "Seven day liquidity coverage", "weight": 0.3, "score": 48, "confidence": 0.85 },
+      { "key": "fourteen_day_essential_coverage", "label": "Fourteen day essential coverage", "weight": 0.25, "score": 60, "confidence": 0.8 },
+      { "key": "obligation_collision_risk", "label": "Obligation collision risk", "weight": 0.2, "score": 30, "confidence": 0.85 },
+      { "key": "income_stability", "label": "Income stability", "weight": 0.15, "score": 55, "confidence": 0.7 },
+      { "key": "emergency_reserve_coverage", "label": "Emergency reserve coverage", "weight": 0.1, "score": 65, "confidence": 0.75 }
+    ],
+    "primary_weakness": "obligation_collision_risk",
+    "primary_stabilizing_factor": "fourteen_day_essential_coverage",
+    "data_freshness": "current",
+    "disclosure": "The Financial Resilience Score estimates short term liquidity capacity. It is not a credit score and does not determine eligibility for financial products."
+  }
+}

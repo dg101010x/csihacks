@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "relief-integrations"
+version = "0.1.0"
+description = "Relief Plan Two — account provider integrations: Plaid + the synthetic Wells Fargo reference adapter (Section 15-16)."
+requires-python = ">=3.9"
+dependencies = ["relief-contracts", "httpx>=0.27"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["relief_integrations"]

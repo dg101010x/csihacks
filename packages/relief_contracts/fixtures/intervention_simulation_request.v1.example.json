@@ -1,0 +1,17 @@
+{
+  "contract_version": "1.0.0",
+  "simulation_id": "sim_01",
+  "base_forecast_id": "forecast_01",
+  "household_snapshot_id": "snap_01",
+  "interventions": [
+    {
+      "action_type": "split_payment",
+      "obligation_id": "obl_car_01",
+      "parameters": {
+        "first_payment_cents": 12000,
+        "second_payment_cents": 12000,
+        "second_payment_date": "2026-08-07"
+      }
+    }
+  ]
+}

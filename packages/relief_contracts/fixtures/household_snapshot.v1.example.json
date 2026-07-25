@@ -1,0 +1,83 @@
+{
+  "contract_version": "1.0.0",
+  "snapshot_id": "snap_01",
+  "household_id": "hh_01",
+  "generated_at": "2026-07-25T16:00:00Z",
+  "timezone": "America/Los_Angeles",
+  "currency": "USD",
+  "accounts": [
+    {
+      "account_id": "acct_01",
+      "provider": "synthetic_wells_fargo",
+      "account_type": "checking",
+      "account_subtype": null,
+      "display_name": "Everyday Checking",
+      "current_balance_cents": 84213,
+      "available_balance_cents": 84213,
+      "balance_updated_at": "2026-07-25T15:55:00Z",
+      "data_status": "current",
+      "is_simulated": true
+    }
+  ],
+  "obligations": [
+    {
+      "obligation_id": "obl_car_01",
+      "provider_id": "prov_auto_lender",
+      "obligation_type": "loan_payment",
+      "display_name": "Auto Loan",
+      "principal_balance_cents": 1240000,
+      "scheduled_amount_cents": 24000,
+      "next_due_at": "2026-07-27T09:00:00Z",
+      "recurrence_rule": "FREQ=MONTHLY",
+      "essentiality_score": 0.8,
+      "status": "active",
+      "source_confidence": 0.95,
+      "consumer_confirmed": true
+    }
+  ],
+  "recent_events": [],
+  "known_future_events": [
+    {
+      "contract_version": "1.0.0",
+      "event_id": "evt_01",
+      "household_id": "hh_01",
+      "account_id": "acct_01",
+      "source": "synthetic_wells_fargo",
+      "source_event_id": "source_981",
+      "event_type": "scheduled_payment",
+      "event_status": "scheduled",
+      "occurred_at": "2026-07-27T09:00:00Z",
+      "effective_at": "2026-07-27T09:00:00Z",
+      "amount_cents": 24000,
+      "currency": "USD",
+      "direction": "outflow",
+      "merchant_name": "Auto Lender",
+      "merchant_category": "loan_payment",
+      "obligation_id": "obl_car_01",
+      "is_recurring": true,
+      "is_pending": false,
+      "metadata": {}
+    }
+  ],
+  "consumer_constitution": {
+    "version": 1,
+    "protected_categories": ["housing", "groceries", "medicine", "transportation"],
+    "allow_term_extension": true,
+    "maximum_added_interest_cents": 0,
+    "require_confirmation_for_subscriptions": true
+  },
+  "provider_capabilities": [
+    {
+      "provider_id": "prov_auto_lender",
+      "product_type": "auto_loan",
+      "action_type": "split_payment",
+      "eligibility_rule": "hardship_demonstrated",
+      "cost_rule": "no_added_fee",
+      "timing_rule": "within_current_billing_cycle",
+      "evidence_source": "simulated_demonstration_policy",
+      "effective_from": "2026-01-01T00:00:00Z",
+      "effective_until": null,
+      "is_simulated": true
+    }
+  ]
+}
