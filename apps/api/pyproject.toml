@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "relief-api"
+version = "0.1.0"
+description = "Relief Plan Two — the application backend (Section 6/29-31)."
+requires-python = ">=3.9"
+dependencies = [
+    "relief-contracts",
+    "relief-ledger",
+    "relief-recurring-detection",
+    "relief-obligations",
+    "relief-deterministic-forecast",
+    "relief-resilience",
+    "relief-elasticity",
+    "relief-interventions",
+    "relief-consumer-constitution",
+    "relief-explanations",
+    "relief-audit",
+    "relief-integrations",
+    "relief-workflow-worker",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "SQLAlchemy>=2.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0", "httpx>=0.27"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
