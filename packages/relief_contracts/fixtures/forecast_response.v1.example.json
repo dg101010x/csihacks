@@ -1,0 +1,45 @@
+{
+  "contract_version": "1.0.0",
+  "request_id": "forecast_req_01",
+  "forecast_id": "forecast_01",
+  "provider": "deterministic",
+  "provider_version": "1.0.0",
+  "generated_at": "2026-07-25T16:00:01Z",
+  "valid_until": "2026-07-25T17:00:01Z",
+  "confidence": 0.82,
+  "is_stale": false,
+  "warnings": [],
+  "daily_summary": [
+    {
+      "event_date": "2026-07-27",
+      "median_ending_balance_cents": 60213,
+      "lower_ending_balance_cents": 52213,
+      "upper_ending_balance_cents": 66213,
+      "reserve_violation_probability": 0.43
+    }
+  ],
+  "trajectories": [
+    {
+      "scenario_index": 0,
+      "event_date": "2026-07-27",
+      "starting_balance_cents": 84213,
+      "inflow_cents": 0,
+      "outflow_cents": 24000,
+      "ending_balance_cents": 60213,
+      "essential_reserve_cents": 50000
+    }
+  ],
+  "distress_probabilities": {
+    "negative_balance": 0.43,
+    "essential_reserve_violation": 0.72,
+    "missed_obligation": 0.31
+  },
+  "reason_factors": [
+    {
+      "factor": "obligation_collision",
+      "weight": 0.6,
+      "description": "The auto loan payment and rent are both due within the same 48 hour window."
+    }
+  ],
+  "model_metadata": null
+}

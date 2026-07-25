@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relief.dev/schemas/forecast_request.v1.schema.json",
+  "title": "ForecastRequestV1",
+  "type": "object",
+  "required": [
+    "contract_version", "request_id", "snapshot", "horizon_days", "scenario_count",
+    "requested_outputs"
+  ],
+  "properties": {
+    "contract_version": { "$ref": "definitions.v1.schema.json#/$defs/ContractVersion" },
+    "request_id": { "type": "string" },
+    "snapshot": { "$ref": "household_snapshot.v1.schema.json" },
+    "horizon_days": { "type": "integer", "minimum": 1 },
+    "scenario_count": { "type": "integer", "minimum": 1 },
+    "requested_outputs": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "daily_balance_trajectories", "distress_probabilities",
+          "income_distribution", "variable_spending_distribution"
+        ]
+      }
+    }
+  },
+  "additionalProperties": false
+}

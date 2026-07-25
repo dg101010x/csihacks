@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relief.dev/schemas/forecast_response.v1.schema.json",
+  "title": "ForecastResponseV1",
+  "type": "object",
+  "required": [
+    "contract_version", "request_id", "forecast_id", "provider", "provider_version",
+    "generated_at", "valid_until", "confidence", "is_stale", "warnings",
+    "daily_summary", "trajectories", "distress_probabilities", "reason_factors",
+    "model_metadata"
+  ],
+  "properties": {
+    "contract_version": { "$ref": "definitions.v1.schema.json#/$defs/ContractVersion" },
+    "request_id": { "type": "string" },
+    "forecast_id": { "type": "string" },
+    "provider": { "enum": ["mock", "deterministic", "relieffm"] },
+    "provider_version": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "valid_until": { "type": "string", "format": "date-time" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "is_stale": { "type": "boolean" },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "daily_summary": { "type": "array", "items": { "$ref": "definitions.v1.schema.json#/$defs/DailySummaryEntry" } },
+    "trajectories": { "type": "array", "items": { "$ref": "definitions.v1.schema.json#/$defs/TrajectoryPoint" } },
+    "distress_probabilities": {
+      "type": "object",
+      "required": ["negative_balance", "essential_reserve_violation", "missed_obligation"],
+      "properties": {
+        "negative_balance": { "type": "number", "minimum": 0, "maximum": 1 },
+        "essential_reserve_violation": { "type": "number", "minimum": 0, "maximum": 1 },
+        "missed_obligation": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "reason_factors": { "type": "array", "items": { "$ref": "definitions.v1.schema.json#/$defs/ReasonFactor" } },
+    "model_metadata": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["model_version", "calibration_version", "inference_latency_ms"],
+          "properties": {
+            "model_version": { "type": "string" },
+            "calibration_version": { "type": ["string", "null"] },
+            "inference_latency_ms": { "type": "number", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

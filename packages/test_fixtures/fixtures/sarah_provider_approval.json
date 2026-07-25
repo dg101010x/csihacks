@@ -1,0 +1,26 @@
+{
+  "case_id": "case_sarah_01",
+  "package_id": "int_sarah_recommended",
+  "consumer_approval": {
+    "status": "approved",
+    "approved_at": "2026-07-25T16:05:00Z",
+    "approved_action_ids": ["action_split_payment_01", "action_pause_streaming_01"],
+    "request_id": "req_consumer_approve_01"
+  },
+  "provider_case": {
+    "case_id": "provcase_sarah_01",
+    "provider_id": "prov_auto_lender",
+    "action_id": "action_split_payment_01",
+    "status": "pending_review",
+    "consumer_impact_summary": "Sarah's Jul 27 payment drops from $240.00 to $120.00; the remaining $120.00 is collected Aug 7 with no added fee.",
+    "provider_impact_summary": "Payment received in two installments within the same billing cycle; no change to total amount owed or interest.",
+    "policy_reference": {
+      "document_id": "policy_auto_hardship_01",
+      "passage_id": "p3",
+      "effective_date": "2026-01-01",
+      "confidence": 0.7,
+      "is_simulated": true
+    }
+  },
+  "workflow_status": "awaiting_provider_approval"
+}

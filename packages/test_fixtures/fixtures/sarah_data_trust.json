@@ -1,0 +1,22 @@
+{
+  "sources": [
+    {
+      "source": "synthetic_wells_fargo",
+      "last_refresh_at": "2026-07-25T15:55:00Z",
+      "coverage_start": "2026-06-25",
+      "coverage_end": "2026-08-24",
+      "missing_data_notes": [],
+      "stale": false,
+      "duplicate_events_detected": 0,
+      "event_classification_confidence": 0.97,
+      "forecast_provider": "deterministic",
+      "forecast_provider_version": "1.0.0",
+      "relieffm_version": null,
+      "calibration_summary": "ReliefFM is not yet connected — every forecast in this demonstration is produced by the deterministic engine (Section 39), the permanent fallback.",
+      "known_limitations": [
+        "Variable spending is estimated from recent essential spending, not modeled per-category.",
+        "Recurring detection confidence is not shown per-transaction in this demo build."
+      ]
+    }
+  ]
+}

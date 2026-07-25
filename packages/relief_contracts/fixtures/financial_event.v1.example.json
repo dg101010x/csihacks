@@ -1,0 +1,21 @@
+{
+  "contract_version": "1.0.0",
+  "event_id": "evt_01",
+  "household_id": "hh_01",
+  "account_id": "acct_01",
+  "source": "synthetic_wells_fargo",
+  "source_event_id": "source_981",
+  "event_type": "scheduled_payment",
+  "event_status": "scheduled",
+  "occurred_at": "2026-07-27T09:00:00Z",
+  "effective_at": "2026-07-27T09:00:00Z",
+  "amount_cents": 24000,
+  "currency": "USD",
+  "direction": "outflow",
+  "merchant_name": "Auto Lender",
+  "merchant_category": "loan_payment",
+  "obligation_id": "obl_car_01",
+  "is_recurring": true,
+  "is_pending": false,
+  "metadata": {}
+}

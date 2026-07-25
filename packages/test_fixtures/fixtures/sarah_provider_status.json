@@ -1,0 +1,43 @@
+{
+  "providers": [
+    {
+      "provider_id": "synthetic_wells_fargo",
+      "display_name": "Synthetic Wells Fargo",
+      "connection_status": "connected",
+      "accounts_available": 1,
+      "last_synced_at": "2026-07-25T15:55:00Z",
+      "supported_actions": ["get_accounts", "get_balances", "get_transactions", "get_scheduled_obligations"],
+      "unsupported_actions": ["direct_balance_modification", "payment_cancellation"],
+      "approval_requirements": "Simulated reference institution — no real modification capability exists.",
+      "expected_response_time": "Instant (synthetic)",
+      "pending_requests": 0,
+      "is_simulated": true
+    },
+    {
+      "provider_id": "prov_auto_lender",
+      "display_name": "Auto Lender (loan servicer)",
+      "connection_status": "connected",
+      "accounts_available": 1,
+      "last_synced_at": "2026-07-25T15:55:00Z",
+      "supported_actions": ["split_payment"],
+      "unsupported_actions": ["term_extension", "principal_reduction", "rate_change"],
+      "approval_requirements": "Hardship must be demonstrated; no added fee within the current billing cycle.",
+      "expected_response_time": "Within 1 business day (simulated as immediate for this demo)",
+      "pending_requests": 0,
+      "is_simulated": true
+    },
+    {
+      "provider_id": "plaid_sandbox",
+      "display_name": "Plaid Sandbox",
+      "connection_status": "disconnected",
+      "accounts_available": 0,
+      "last_synced_at": "2026-07-01T00:00:00Z",
+      "supported_actions": ["link_token", "transaction_sync", "webhook"],
+      "unsupported_actions": [],
+      "approval_requirements": "Not connected in this environment.",
+      "expected_response_time": "N/A",
+      "pending_requests": 0,
+      "is_simulated": true
+    }
+  ]
+}

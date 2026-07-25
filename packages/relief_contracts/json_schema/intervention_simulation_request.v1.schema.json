@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relief.dev/schemas/intervention_simulation_request.v1.schema.json",
+  "title": "InterventionSimulationRequestV1",
+  "type": "object",
+  "required": [
+    "contract_version", "simulation_id", "base_forecast_id", "household_snapshot_id",
+    "interventions"
+  ],
+  "properties": {
+    "contract_version": { "$ref": "definitions.v1.schema.json#/$defs/ContractVersion" },
+    "simulation_id": { "type": "string" },
+    "base_forecast_id": { "type": "string" },
+    "household_snapshot_id": { "type": "string" },
+    "interventions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["action_type", "obligation_id", "parameters"],
+        "properties": {
+          "action_type": { "type": "string" },
+          "obligation_id": { "type": "string" },
+          "parameters": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

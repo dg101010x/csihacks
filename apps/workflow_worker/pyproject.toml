@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "relief-workflow-worker"
+version = "0.1.0"
+description = "Relief Plan Two — staged approval workflow (Section 62/85)."
+requires-python = ">=3.9"
+dependencies = ["relief-contracts", "relief-interventions", "SQLAlchemy>=2.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["relief_workflow_worker"]
