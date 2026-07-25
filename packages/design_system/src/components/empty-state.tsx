@@ -21,10 +21,10 @@ export function EmptyState({
         className,
       )}
     >
-      <Icon className="size-8 text-muted" aria-hidden="true" />
+      <Icon className="size-8 text-muted-foreground" aria-hidden="true" />
       <div className="flex flex-col gap-1">
         <p className="text-sm font-semibold text-foreground">{title}</p>
-        <p className="max-w-sm text-sm text-muted">{description}</p>
+        <p className="max-w-sm text-sm text-muted-foreground">{description}</p>
       </div>
       {action}
     </div>

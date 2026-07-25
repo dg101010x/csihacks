@@ -36,7 +36,11 @@ export const semanticColors = {
   border: "#E4E7EC",
   primary: colors.trustBlue,
   primaryForeground: "#FFFFFF",
-  muted: colors.slate,
+  // Named "mutedForeground" (not "muted") to match the shadcn/Tailwind
+  // convention apps/web builds on: bg-muted is a surface, text-muted-foreground
+  // is the text color that pairs with it. Design system has no muted surface
+  // token of its own — only this text color.
+  mutedForeground: colors.slate,
   positive: colors.reliefMint,
   caution: colors.signalAmber,
   risk: colors.riskCoral,

@@ -28,7 +28,7 @@ const preset: Partial<Config> = {
           DEFAULT: "var(--color-primary)",
           foreground: "var(--color-primary-foreground)",
         },
-        muted: "var(--color-muted)",
+        "muted-foreground": "var(--color-muted-foreground)",
         positive: "var(--color-positive)",
         caution: "var(--color-caution)",
         risk: "var(--color-risk)",

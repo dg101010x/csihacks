@@ -45,7 +45,7 @@
   --color-destructive: var(--color-risk-coral);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
-  --color-muted-foreground: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
   --color-muted: var(--muted-surface);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary-surface);

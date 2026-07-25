@@ -53,7 +53,7 @@ export const DisabledControls: Story = {
   render: () => (
     <div className="flex w-80 flex-col gap-3">
       <Input disabled defaultValue="Cannot edit while provider review is pending" />
-      <label className="flex items-center gap-2 text-sm text-muted">
+      <label className="flex items-center gap-2 text-sm text-muted-foreground">
         <Checkbox disabled />
         Locked during review
       </label>

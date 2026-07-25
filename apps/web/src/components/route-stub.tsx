@@ -14,9 +14,9 @@ export function RouteStub({
 }) {
   return (
     <main className="flex min-h-screen flex-col items-start gap-3 px-8 py-16">
-      <p className="font-mono text-xs uppercase tracking-wide text-muted">{phase}</p>
+      <p className="font-mono text-xs uppercase tracking-wide text-muted-foreground">{phase}</p>
       <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
-      <p className="max-w-xl text-muted">{description}</p>
+      <p className="max-w-xl text-muted-foreground">{description}</p>
     </main>
   );
 }

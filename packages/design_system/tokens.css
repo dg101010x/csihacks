@@ -21,7 +21,7 @@
   --color-foreground: var(--color-deep-ink);
   --color-primary: var(--color-trust-blue);
   --color-primary-foreground: #FFFFFF;
-  --color-muted: var(--color-slate);
+  --color-muted-foreground: var(--color-slate);
   --color-positive: var(--color-relief-mint);
   --color-caution: var(--color-signal-amber);
   --color-risk: var(--color-risk-coral);

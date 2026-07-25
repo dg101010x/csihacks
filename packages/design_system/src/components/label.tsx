@@ -35,7 +35,7 @@ export function FormField({
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={id}>{label}</Label>
       {children}
-      {hint && !error && <p className="text-xs text-muted">{hint}</p>}
+      {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
       {error && (
         <p id={`${id}-error`} role="alert" className="text-xs text-risk">
           {error}
