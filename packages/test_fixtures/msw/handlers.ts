@@ -60,14 +60,27 @@ export const handlers = [
     return HttpResponse.json(envelope(fixture.resilience_score, "req_resilience_01"));
   }),
 
-  // Forecasts — POST triggers the shock (Section 16.3 shock simulator)
+  // Forecasts (Section 31.4) — generates a forecast for the household's
+  // *current* state. Does not itself mutate state; see /v1/demo/shock below
+  // for the Section 16.3 shock simulator, a demo-only action.
   http.post("*/v1/forecasts", () => {
-    state.shocked = true;
-    return HttpResponse.json(envelope(sarahIncomeShock.forecast, "req_forecast_01"));
+    const fixture = state.shocked ? sarahIncomeShock : sarahBaseline;
+    return HttpResponse.json(envelope(fixture.forecast, "req_forecast_01"));
   }),
   http.get("*/v1/forecasts/:forecastId", ({ params }) => {
     const fixture = params.forecastId === "forecast_sarah_shock" ? sarahIncomeShock : sarahBaseline;
     return HttpResponse.json(envelope(fixture.forecast, "req_forecast_get_01"));
+  }),
+
+  // Demo-only: the Section 16.3 shock simulator (/demo route, Section 17).
+  // Not part of the Section 31 production API surface.
+  http.post("*/v1/demo/shock", () => {
+    state.shocked = true;
+    return HttpResponse.json(envelope(sarahIncomeShock, "req_demo_shock_01"));
+  }),
+  http.post("*/v1/demo/reset", () => {
+    resetHandlerState();
+    return HttpResponse.json(envelope(sarahBaseline, "req_demo_reset_01"));
   }),
 
   // Interventions

@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { MswProvider } from "@/mocks/msw-provider";
 
 /**
  * Server state (Section 25.1: accounts, forecasts, intervention cases,
@@ -22,5 +23,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       }),
   );
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MswProvider>{children}</MswProvider>
+    </QueryClientProvider>
+  );
 }

@@ -25,13 +25,31 @@ describe("MSW handlers back the consumer journey (Section 16.1)", () => {
     expect(score.data.overall).toBe(82);
   });
 
-  it("switches to the shocked snapshot after POST /v1/forecasts (shock simulator)", async () => {
+  it("POST /v1/forecasts alone does not mutate household state", async () => {
     const forecast = await fetch("http://localhost/v1/forecasts", { method: "POST" }).then(json);
-    expect(forecast.data.forecast_id).toBe("forecast_sarah_shock");
-    expect(forecast.data.distress_probabilities.essential_reserve_violation).toBeGreaterThan(0.5);
+    expect(forecast.data.forecast_id).toBe("forecast_sarah_baseline");
+
+    const snapshot = await fetch("http://localhost/v1/households/current/snapshot").then(json);
+    expect(snapshot.data.snapshot_id).toBe("snap_sarah_baseline");
+  });
+
+  it("switches to the shocked snapshot after POST /v1/demo/shock (Section 16.3)", async () => {
+    const shockResult = await fetch("http://localhost/v1/demo/shock", { method: "POST" }).then(json);
+    expect(shockResult.data.forecast.forecast_id).toBe("forecast_sarah_shock");
+    expect(shockResult.data.forecast.distress_probabilities.essential_reserve_violation).toBeGreaterThan(0.5);
 
     const snapshot = await fetch("http://localhost/v1/households/current/snapshot").then(json);
     expect(snapshot.data.snapshot_id).toBe("snap_sarah_shock");
+
+    const forecast = await fetch("http://localhost/v1/forecasts", { method: "POST" }).then(json);
+    expect(forecast.data.forecast_id).toBe("forecast_sarah_shock");
+  });
+
+  it("POST /v1/demo/reset returns to baseline", async () => {
+    await fetch("http://localhost/v1/demo/shock", { method: "POST" });
+    await fetch("http://localhost/v1/demo/reset", { method: "POST" });
+    const snapshot = await fetch("http://localhost/v1/households/current/snapshot").then(json);
+    expect(snapshot.data.snapshot_id).toBe("snap_sarah_baseline");
   });
 
   it("walks consumer approval through provider approval to a completed case", async () => {
