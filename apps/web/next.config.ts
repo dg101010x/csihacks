@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
       { source: "/settings/integrations", destination: "/providers", permanent: true },
       // Package review/approval is now an inline modal on /interventions.
       { source: "/interventions/:id", destination: "/interventions", permanent: true },
+      // Decision detail is now a selectable row + evidence panel on /audit.
+      { source: "/audit/:id", destination: "/audit", permanent: true },
     ];
   },
 };
