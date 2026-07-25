@@ -24,7 +24,10 @@ export function NotificationCenter() {
       description: w.description,
       href: "/timeline",
     })),
-    ...(interventions.data && interventions.data.length > 0
+    // Only surfaced when there's an actual risk to respond to — otherwise
+    // this would decoratively suggest interventions nothing needs (Section
+    // 3.7 of the redesign brief: no decorative data).
+    ...((riskWindows.data?.length ?? 0) > 0 && interventions.data && interventions.data.length > 0
       ? [
           {
             id: "interventions_available",

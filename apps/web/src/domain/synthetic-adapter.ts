@@ -250,7 +250,7 @@ function packageEvidence(): ModelEvidence {
 }
 
 export async function fetchInterventionPackages(): Promise<InterventionPackage[]> {
-  const res = await apiGet<InterventionCandidateV1[]>("/v1/interventions/generate");
+  const res = await apiPost<InterventionCandidateV1[]>("/v1/interventions/generate");
   return res.data.map((candidate) => ({
     id: candidate.package_id,
     label: candidate.label,

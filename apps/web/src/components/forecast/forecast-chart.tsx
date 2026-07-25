@@ -133,10 +133,12 @@ export function ForecastChart({
                   stroke={chartTokens.modifiedTrajectory}
                   strokeWidth={2}
                   isAnimationActive={!reducedMotion}
-                  dot={({ key, ...dotProps }) => <EventDot key={key} {...dotProps} onSelectPoint={onSelectPoint} />}
+                  dot={({ key, ...dotProps }) => (
+                    <EventDot key={key} {...omitR(dotProps)} onSelectPoint={onSelectPoint} />
+                  )}
                   activeDot={(props: unknown) => {
-                    const { key, ...dotProps } = props as { key?: string };
-                    return <EventDot key={key} {...dotProps} onSelectPoint={onSelectPoint} r={5} />;
+                    const { key, ...dotProps } = props as { key?: string; r?: number };
+                    return <EventDot key={key} {...omitR(dotProps)} onSelectPoint={onSelectPoint} minRadius={5} />;
                   }}
                 />
               </ComposedChart>
@@ -149,24 +151,36 @@ export function ForecastChart({
   );
 }
 
+/** Strips Recharts' own default `r` (always ~3, its Line dot default) so it
+ * can never shadow EventDot's own hasEvent-based sizing. */
+function omitR<T extends { r?: number }>(props: T): Omit<T, "r"> {
+  const { r: _r, ...rest } = props;
+  void _r;
+  return rest;
+}
+
 function EventDot(props: {
   cx?: number;
   cy?: number;
   payload?: ForecastPoint;
   onSelectPoint?: (point: ForecastPoint) => void;
-  r?: number;
+  /** Minimum radius for the active (hovered) dot — distinct from Recharts'
+   * own incoming `r` (always ~3, its Line default), which we deliberately
+   * ignore so event days can render larger regardless of that default. */
+  minRadius?: number;
 }) {
-  const { cx, cy, payload, onSelectPoint, r } = props;
+  const { cx, cy, payload, onSelectPoint, minRadius } = props;
   if (cx == null || cy == null || !payload) return <g />;
   const hasIncome = payload.events.some((e) => e.direction === "inflow");
   const hasOutflow = payload.events.some((e) => e.direction === "outflow");
   const hasEvent = hasIncome || hasOutflow;
+  const radius = Math.max(minRadius ?? 0, hasEvent ? 5 : 2.5);
 
   return (
     <circle
       cx={cx}
       cy={cy}
-      r={r ?? (hasEvent ? 5 : 2.5)}
+      r={radius}
       fill={hasOutflow ? chartTokens.riskRegionBorder : hasIncome ? chartTokens.improvementMarker : chartTokens.modifiedTrajectory}
       stroke="var(--color-surface)"
       strokeWidth={hasEvent ? 1.5 : 0}
