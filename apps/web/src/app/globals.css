@@ -21,8 +21,21 @@
  * bg-primary / text-foreground keep working; the values underneath are ours.
  */
 @theme inline {
+  /* Raw palette (Section 19) — registered as their own theme keys so
+     bg-deep-ink/40 etc. actually generate a utility instead of silently
+     resolving to a transparent color. Everything else in this block
+     reference these by value. */
+  --color-deep-ink: var(--color-deep-ink);
+  --color-porcelain: var(--color-porcelain);
+  --color-trust-blue: var(--color-trust-blue);
+  --color-relief-mint: var(--color-relief-mint);
+  --color-signal-amber: var(--color-signal-amber);
+  --color-risk-coral: var(--color-risk-coral);
+  --color-slate: var(--color-slate);
+
   --color-background: var(--color-background);
   --color-foreground: var(--color-foreground);
+  --color-surface: var(--color-surface);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-heading: var(--font-sans);
