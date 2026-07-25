@@ -127,15 +127,6 @@ Start with `FORECAST_PROVIDER=mock` — the whole demo works off static fixtures
 
 Currently everything demoable runs on the deterministic engine + synthetic Wells Fargo data. ReliefFM is real but running in shadow mode — it's not driving anything user-facing yet.
 
-## Team
-
-- **Prakshal Doshi** — cloud infrastructure & reliability
-- **Lokesh Kank** — AI/ML engineering
-- **Aran Yogesh** — product & platform engineering
-- **Mogana Kumaran S** — data engineering, pipeline architecture
-- **Hemalatha Krishnan** — backend systems & QA
-- **Sakthivel Natarajan** — analytics & engineering delivery
-
 ## A note on the data
 
 Everything here runs on synthetic data — a made-up "Wells Fargo" formatted dataset and a household simulator we built ourselves (ReliefSim). No real bank, no real user, no real money moves. It's built to behave like the real thing would, but treat every number in this demo as fictional until stated otherwise.
