@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+.pytest_cache/
+build/
+dist/
+*.pyc
+*.egg-info/
+runs/
+packages/relief_contracts/json_schema/
+.DS_Store
