@@ -67,8 +67,6 @@ export GPU_COUNT="${GPU_COUNT:-1}"
 export BOOT_DISK_SIZE_GB="${BOOT_DISK_SIZE_GB:-100}"
 if [ "$PROVISIONING_MODEL" = "FLEX_START" ]; then
   export REQUEST_VALID_FOR_DURATION="${REQUEST_VALID_FOR_DURATION:-2h}"
-  export MAX_VM_RUN_DURATION="${MAX_VM_RUN_DURATION:-12h}"
-  export INSTANCE_TERMINATION_ACTION="${INSTANCE_TERMINATION_ACTION:-DELETE}"
 fi
 export IMAGE_FAMILY="${IMAGE_FAMILY:-pytorch-2-9-cu129-ubuntu-2204-nvidia-580}"  # Deep Learning VM: PyTorch + CUDA preinstalled
 export IMAGE_PROJECT="${IMAGE_PROJECT:-deeplearning-platform-release}"
@@ -109,6 +107,11 @@ if [ "$MODEL_PRESET" = "flash" ]; then
   # expensive at Flash scale, so don't repeat Mini's every-200-step tax.
   export EVAL_EVERY_STEPS="${EVAL_EVERY_STEPS:-600}"
   export TRAIN_TIMEOUT="${TRAIN_TIMEOUT:-10h}"
+  # Budgets only alert; they do not cap spend. Put a provider-enforced
+  # deletion deadline on every Flash VM, including STANDARD provisioning,
+  # so a stuck startup script cannot bill indefinitely.
+  export MAX_VM_RUN_DURATION="${MAX_VM_RUN_DURATION:-12h}"
+  export INSTANCE_TERMINATION_ACTION="${INSTANCE_TERMINATION_ACTION:-DELETE}"
 else
   export BATCH_SIZE="${BATCH_SIZE:-32}"
   export GRADIENT_ACCUMULATION_STEPS="${GRADIENT_ACCUMULATION_STEPS:-1}"
@@ -116,6 +119,8 @@ else
   export LEARNING_RATE="${LEARNING_RATE:-3e-4}"
   export EVAL_EVERY_STEPS="${EVAL_EVERY_STEPS:-200}"
   export TRAIN_TIMEOUT="${TRAIN_TIMEOUT:-}"
+  export MAX_VM_RUN_DURATION="${MAX_VM_RUN_DURATION:-}"
+  export INSTANCE_TERMINATION_ACTION="${INSTANCE_TERMINATION_ACTION:-}"
 fi
 export RECOVERY_EVERY_STEPS="${RECOVERY_EVERY_STEPS:-100}"
 export RUN_PREFLIGHT="${RUN_PREFLIGHT:-1}"

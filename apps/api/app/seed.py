@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -67,7 +68,13 @@ def seed_demo_household(session: Session) -> None:
 
 
 def get_seeded_accounts(household_id: str) -> list[AccountV1]:
-    return _accounts_by_household.get(household_id, [])
+    accounts = list(_accounts_by_household.get(household_id, []))
+    from .integration_state import get_plaid_connection
+
+    plaid = get_plaid_connection(household_id)
+    if plaid is not None and os.environ.get("RELIEF_USE_PLAID_FOR_FORECAST") == "1":
+        accounts.extend(plaid.accounts)
+    return accounts
 
 
 def get_seeded_provider_capabilities(household_id: str) -> list[ProviderCapabilityV1]:

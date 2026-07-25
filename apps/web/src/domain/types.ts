@@ -58,6 +58,15 @@ export interface ForecastEnvelope {
   scenario_active: boolean;
 }
 
+export interface ForecastModel {
+  id: "deterministic" | "mini" | "flash";
+  name: string;
+  status: "active" | "available" | "training" | "unavailable";
+  selectable: boolean;
+  lifecycle: "active" | "shadow";
+  version: string | null;
+}
+
 export interface RiskWindow {
   id: string;
   start_date: string;

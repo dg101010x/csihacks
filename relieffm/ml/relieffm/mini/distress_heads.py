@@ -42,5 +42,4 @@ class DistressHeads(nn.Module):
     def forward(self, household_embedding: torch.Tensor, engineered_features: torch.Tensor) -> torch.Tensor:
         eng = self.norm(self.engineered_proj(engineered_features))
         x = torch.cat([household_embedding, eng], dim=-1)
-        logits = self.mlp(x).view(-1, self.n_horizons, len(RISK_NAMES))
-        return torch.sigmoid(logits)
+        return self.mlp(x).view(-1, self.n_horizons, len(RISK_NAMES))

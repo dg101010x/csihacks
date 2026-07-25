@@ -4,18 +4,13 @@ import { test, expect } from "@playwright/test";
 // end-to-end tests) lands with the corresponding phase (B-E).
 const routes = [
   "/",
-  "/demo",
-  "/onboarding",
-  "/dashboard",
   "/timeline",
+  "/scenario-lab",
   "/interventions",
-  "/interventions/int_01",
   "/constitution",
-  "/provider",
-  "/provider/cases/case_01",
-  "/audit/decision_01",
-  "/settings",
-  "/settings/integrations",
+  "/audit",
+  "/providers",
+  "/data",
 ];
 
 for (const route of routes) {

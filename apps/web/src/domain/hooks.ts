@@ -19,6 +19,7 @@ const keys = {
   audit: () => [...keys.root, "audit"] as const,
   providers: () => [...keys.root, "providers"] as const,
   data: () => [...keys.root, "data"] as const,
+  models: () => [...keys.root, "models"] as const,
 };
 
 export function useForecastEnvelope() {
@@ -64,10 +65,26 @@ export function useProviderStatus() {
   });
 }
 
+export function useConnectPlaidSandbox() {
+  const invalidateAll = useInvalidateAll();
+  return useMutation({
+    mutationFn: () => reliefClient.connectPlaidSandbox(),
+    onSuccess: () => invalidateAll(),
+  });
+}
+
 export function useDataTrust() {
   return useQuery({
     queryKey: keys.data(),
     queryFn: () => reliefClient.getDataTrust(),
+  });
+}
+
+export function useModels() {
+  return useQuery({
+    queryKey: keys.models(),
+    queryFn: () => reliefClient.getModels(),
+    refetchInterval: 60_000,
   });
 }
 

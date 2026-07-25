@@ -31,6 +31,7 @@ def test_mock_provider_dispatches_to_the_trivial_engine(snapshot):
 
 def test_relieffm_raises_when_not_configured(snapshot, monkeypatch):
     monkeypatch.delenv("RELIEFFM_INFERENCE_URL", raising=False)
+    monkeypatch.delenv("RELIEFFM_MINI_URL", raising=False)
     with pytest.raises(ModelServiceUnavailableError):
         generate_forecast(snapshot, horizon_days=14, provider=ForecastProviderName.relieffm)
 
@@ -45,37 +46,41 @@ def test_relieffm_raises_on_a_failed_call(snapshot):
 
 
 def test_relieffm_response_is_assembled_into_a_valid_forecast_once_the_seam_is_live(snapshot):
-    """Proves the seam's mapping logic is correct even though
-    services/model_inference doesn't exist in this repo yet — once Plan One
-    ships it and points RELIEFFM_INFERENCE_URL at it, this is exactly the
-    shape the gateway will receive and assemble."""
+    requests: list[httpx.Request] = []
 
     def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        if request.url.path == "/model/v1/metadata":
+            return httpx.Response(
+                200,
+                json={
+                    "model_version": "mini-20260725",
+                    "calibration_version": "cal-2026-07",
+                    "supported_horizons": [60],
+                    "maximum_scenarios": 8,
+                },
+            )
+        assert request.url.path == "/model/v1/forecast"
         return httpx.Response(
             200,
             json={
-                "model_version": "reliefm-0.1.0",
-                "calibration_version": "cal-2026-07",
-                "inference_latency_ms": 42.5,
+                "provider_version": "relieffm_mini_mini-20260725",
                 "confidence": 0.93,
                 "daily_summary": [
                     {
-                        "event_date": "2026-07-27",
-                        "median_ending_balance_cents": 80000,
-                        "lower_ending_balance_cents": 75000,
-                        "upper_ending_balance_cents": 85000,
-                        "reserve_violation_probability": 0.05,
+                        "date": "2026-07-26T16:00:00Z",
+                        "balance_p10_cents": 75000,
+                        "balance_p50_cents": 80000,
+                        "balance_p90_cents": 85000,
+                        "inflow_p50_cents": 0,
+                        "outflow_p50_cents": 168000,
                     }
                 ],
                 "trajectories": [
                     {
-                        "scenario_index": 0,
-                        "event_date": "2026-07-27",
-                        "starting_balance_cents": 248000,
-                        "inflow_cents": 0,
-                        "outflow_cents": 168000,
-                        "ending_balance_cents": 80000,
-                        "essential_reserve_cents": 50000,
+                        "scenario_id": 0,
+                        "daily_balances_cents": [80000],
+                        "accounting_valid": True,
                     }
                 ],
                 "distress_probabilities": {
@@ -83,15 +88,54 @@ def test_relieffm_response_is_assembled_into_a_valid_forecast_once_the_seam_is_l
                     "essential_reserve_violation": 0.05,
                     "missed_obligation": 0.01,
                 },
-                "reason_factors": [],
+                "reason_factors": [{"name": "liquidity", "contribution": 0.7}],
+                "warnings": [],
+                "model_metadata": {
+                    "model_version": "mini-20260725",
+                    "calibration_version": "cal-2026-07",
+                },
             },
         )
 
     client = ReliefFMClient(base_url="https://model-inference.internal", transport=httpx.MockTransport(handler))
-    forecast = generate_forecast(snapshot, horizon_days=14, provider=ForecastProviderName.relieffm, client=client)
+    forecast = generate_forecast(snapshot, horizon_days=1, provider=ForecastProviderName.relieffm, client=client)
 
     assert forecast.provider.value == "relieffm"
     assert forecast.model_metadata is not None
-    assert forecast.model_metadata.model_version == "reliefm-0.1.0"
-    assert forecast.model_metadata.inference_latency_ms == 42.5
+    assert forecast.model_metadata.model_version == "relieffm_mini_mini-20260725"
+    assert forecast.model_metadata.inference_latency_ms >= 0
     assert forecast.confidence == 0.93
+    assert forecast.trajectories[0].starting_balance_cents == 248000
+    assert forecast.trajectories[0].ending_balance_cents == 80000
+    assert forecast.trajectories[0].outflow_cents == 168000
+    assert forecast.reason_factors[0].factor == "liquidity"
+
+    payload = json.loads(requests[-1].content)
+    assert payload["horizon_days"] == 60
+    assert payload["scenario_count"] == 8
+    assert payload["snapshot"]["household_state"]["total_liquid_balance_cents"] == 248000
+    assert payload["snapshot"]["obligations"][1]["obligation_type"] == "auto_loan"
+    assert payload["snapshot"]["known_future_events"][0]["event_type"] == "auto_loan_payment"
+
+
+def test_model_status_reports_connected_mini(snapshot):
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path == "/model/v1/health"
+        return httpx.Response(
+            200,
+            json={
+                "status": "ok",
+                "model_version": "mini-20260725",
+                "lifecycle_status": "shadow",
+            },
+        )
+
+    client = ReliefFMClient(base_url="https://model-inference.internal", transport=httpx.MockTransport(handler))
+    assert client.status() == {
+        "id": "mini",
+        "name": "ReliefFM Mini",
+        "status": "available",
+        "selectable": True,
+        "lifecycle": "shadow",
+        "version": "mini-20260725",
+    }

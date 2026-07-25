@@ -66,12 +66,16 @@ create_args=(
 if [ "$INCLUDE_ACCELERATOR_FLAG" = "1" ]; then
   create_args+=(--accelerator "type=$GPU_TYPE,count=$GPU_COUNT")
 fi
+if [ -n "$MAX_VM_RUN_DURATION" ]; then
+  create_args+=(
+    --max-run-duration "$MAX_VM_RUN_DURATION"
+    --instance-termination-action "$INSTANCE_TERMINATION_ACTION"
+  )
+fi
 if [ "$PROVISIONING_MODEL" = "FLEX_START" ]; then
   create_args+=(
     --provisioning-model FLEX_START
     --request-valid-for-duration "$REQUEST_VALID_FOR_DURATION"
-    --max-run-duration "$MAX_VM_RUN_DURATION"
-    --instance-termination-action "$INSTANCE_TERMINATION_ACTION"
     --reservation-affinity none
   )
 fi
@@ -84,5 +88,5 @@ rm -f "$STARTUP_SCRIPT"
 
 echo "instance created. Tail progress with:"
 echo "  gcloud compute instances tail-serial-port-output $INSTANCE_NAME --zone $ZONE --project $PROJECT_ID"
-echo "Or poll gs://$BUCKET/runs/$RUN_ID/ for results. The VM shuts itself down when done -- run teardown.sh afterward."
+echo "Or poll gs://$BUCKET/runs/$RUN_ID/ for results. The VM shuts itself down when done; the hard runtime deadline deletes it."
 echo "RUN_ID=$RUN_ID"

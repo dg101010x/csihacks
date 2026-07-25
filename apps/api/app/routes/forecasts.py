@@ -22,14 +22,8 @@ def create_forecast(
     household_id: str = Depends(get_household_id),
     request_id: str = Depends(get_request_id),
 ):
-    """The README's core architectural rule: three providers (mock,
-    deterministic, relieffm) behind one ForecastResponseV1 shape, selected
-    via FORECAST_PROVIDER — no page, table, optimizer, or workflow may know
-    which one produced a result. Defaults to deterministic since ReliefFM
-    isn't connected in this environment (services/model_inference is Plan
-    One's, not built in this repo); if FORECAST_PROVIDER=relieffm is set
-    but unreachable, falls back to deterministic explicitly with a warning
-    rather than failing the request."""
+    """The safety-critical forecast. Customer-selectable ReliefFM shadow
+    previews live under /v1/models/preview and never change this default."""
     requested = ForecastProviderName(os.environ.get("FORECAST_PROVIDER", "deterministic"))
     snapshot = assemble_household_snapshot(session, household_id)
     warnings: list[str] = []

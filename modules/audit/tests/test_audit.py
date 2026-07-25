@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 import pytest
 from relief_audit import ActorType, InMemoryAuditStore, SqlAuditStore, record_event, replay_decision
 from relief_audit.store import Base
@@ -71,6 +73,33 @@ def test_replay_detects_tampering(store):
     result = replay_decision(store, "dec_3")
     assert result.verified is False
     assert result.broken_at_event_id == event.event_id
+
+
+def test_list_recent_returns_newest_first(store):
+    older = record_event(
+        store,
+        decision_id="dec_old",
+        event_type="created",
+        actor_type=ActorType.system,
+        actor_id="system",
+        request_id="req_old",
+        summary="Older",
+        reason="test",
+        occurred_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
+    )
+    newer = record_event(
+        store,
+        decision_id="dec_new",
+        event_type="created",
+        actor_type=ActorType.system,
+        actor_id="system",
+        request_id="req_new",
+        summary="Newer",
+        reason="test",
+        occurred_at=datetime(2026, 1, 2, tzinfo=timezone.utc),
+    )
+    assert [event.event_id for event in store.list_recent(limit=1)] == [newer.event_id]
+    assert older.event_id != newer.event_id
 
 
 def test_list_for_decision_is_scoped_per_decision(store):

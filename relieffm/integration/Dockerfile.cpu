@@ -1,0 +1,21 @@
+FROM python:3.11-slim
+
+WORKDIR /opt/relieffm
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install the official CPU wheel first. The editable project install below
+# sees this as satisfying torch>=2.5 and does not pull CUDA runtimes.
+RUN pip install --no-cache-dir \
+    torch \
+    --index-url https://download.pytorch.org/whl/cpu
+
+COPY . .
+RUN pip install --no-cache-dir -e .
+
+ENV PYTHONUNBUFFERED=1
+EXPOSE 8080
+
+CMD ["uvicorn", "services.model_inference.app:app", "--host", "0.0.0.0", "--port", "8080"]

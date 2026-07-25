@@ -2,7 +2,7 @@ services:
   relieffm-mini:
     build:
       context: ..
-      dockerfile: infra/gcp/Dockerfile
+      dockerfile: integration/Dockerfile.cpu
     environment:
       RELIEFFM_CHECKPOINT_DIR: /models/checkpoint
       RELIEFFM_DEVICE: cpu

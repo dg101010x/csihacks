@@ -12,6 +12,9 @@ from sqlalchemy import text
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
+    from app.integration_state import clear_plaid_connections
+
+    clear_plaid_connections()
     # Fresh SQLite file per test so seeding/state doesn't leak across tests.
     db_path = tmp_path / "test.db"
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{db_path}")
@@ -32,6 +35,7 @@ def client(tmp_path, monkeypatch):
 
     with TestClient(main_module.app) as test_client:
         yield test_client
+    clear_plaid_connections()
 
 
 def test_health_check(client):
@@ -105,6 +109,10 @@ def test_full_approval_flow_reaches_executed_and_is_audited(client):
     assert len(events) >= 1
     assert events[0]["event_type"] == "intervention_submitted"
 
+    recent = client.get("/v1/audit").json()["data"]
+    assert len(recent) >= len(events)
+    assert recent[0]["decision_id"] == target["package_id"]
+
 
 def test_constitution_rules_are_seeded(client):
     res = client.get("/v1/constitution/rules")
@@ -118,7 +126,148 @@ def test_providers_status_and_data_trust_are_served(client):
     assert any(p["provider_id"] == "synthetic_wells_fargo" for p in providers)
 
     trust = client.get("/v1/data/trust").json()["data"]
-    assert trust[0]["forecast_provider"] == "deterministic"
+    assert trust[0]["forecast_provider"] == "deterministic (actions) + ReliefFM Mini (shadow preview)"
+
+
+def test_plaid_sandbox_connection_syncs_accounts_events_and_status(client, monkeypatch):
+    class FakePlaidClient:
+        env = "sandbox"
+
+        def create_sandbox_public_token(self, *, institution_id):
+            assert institution_id == "ins_109508"
+            return "public-sandbox"
+
+        def exchange_public_token(self, public_token):
+            assert public_token == "public-sandbox"
+            return {"access_token": "access-sandbox", "item_id": "item-sandbox"}
+
+        def get_accounts(self, access_token):
+            assert access_token == "access-sandbox"
+            return [
+                {
+                    "account_id": "plaid_checking",
+                    "name": "Plaid Checking",
+                    "official_name": "Sandbox Checking",
+                    "type": "depository",
+                    "subtype": "checking",
+                    "balances": {"current": 1234.56, "available": 1200.0},
+                }
+            ]
+
+        def sync_transactions(self, access_token, *, cursor=None):
+            assert access_token == "access-sandbox"
+            return {
+                "added": [
+                    {
+                        "transaction_id": "txn_demo",
+                        "account_id": "plaid_checking",
+                        "amount": 19.95,
+                        "date": "2026-07-24",
+                        "pending": False,
+                        "name": "Sandbox Market",
+                        "iso_currency_code": "USD",
+                        "personal_finance_category": {"primary": "FOOD_AND_DRINK"},
+                    }
+                ],
+                "modified": [],
+                "removed": [],
+                "next_cursor": "cursor-1",
+                "has_more": False,
+            }
+
+        def close(self):
+            pass
+
+    import app.routes.integrations as integrations_route
+
+    monkeypatch.setattr(integrations_route, "_client", lambda: FakePlaidClient())
+
+    result = client.post("/v1/integrations/plaid/sandbox/connect", json={})
+    assert result.status_code == 200
+    assert result.json()["data"]["accounts_available"] == 1
+    assert result.json()["data"]["events_synchronized"] == 1
+
+    status = client.get("/v1/integrations/status").json()["data"][0]
+    assert status["connection_status"] == "connected"
+    assert status["accounts_available"] == 1
+    assert status["forecast_input_enabled"] is False
+
+    providers = client.get("/v1/providers/status").json()["data"]
+    plaid = next(provider for provider in providers if provider["provider_id"] == "plaid_sandbox")
+    assert plaid["connection_status"] == "connected"
+    assert plaid["accounts_available"] == 1
+
+    snapshot = client.get("/v1/households/current/snapshot").json()["data"]
+    assert not any(account["account_id"] == "plaid_checking" for account in snapshot["accounts"])
+    assert not any(event["source_event_id"] == "txn_demo" for event in snapshot["recent_events"])
+
+
+def test_plaid_link_token_without_credentials_is_explicitly_unavailable(client, monkeypatch):
+    for name in ("PLAID_CLIENT_ID", "PLAID_SECRET", "CLIENT_ID", "SANDBOX_SECRET"):
+        monkeypatch.delenv(name, raising=False)
+    response = client.post("/v1/integrations/plaid/link_token")
+    assert response.status_code == 503
+    assert "must be set" in response.json()["detail"]
+
+
+def test_plaid_can_be_explicitly_enabled_as_forecast_input(client, monkeypatch):
+    monkeypatch.setenv("RELIEF_USE_PLAID_FOR_FORECAST", "1")
+
+    class FakePlaidClient:
+        env = "sandbox"
+
+        def create_sandbox_public_token(self, *, institution_id):
+            return "public-sandbox"
+
+        def exchange_public_token(self, public_token):
+            return {"access_token": "access-sandbox", "item_id": "item-sandbox"}
+
+        def get_accounts(self, access_token):
+            return [
+                {
+                    "account_id": "plaid_checking",
+                    "name": "Plaid Checking",
+                    "type": "depository",
+                    "subtype": "checking",
+                    "balances": {"current": 100.0, "available": 100.0},
+                }
+            ]
+
+        def sync_transactions(self, access_token, *, cursor=None):
+            return {
+                "added": [],
+                "modified": [],
+                "removed": [],
+                "next_cursor": "cursor-1",
+                "has_more": False,
+            }
+
+        def close(self):
+            pass
+
+    import app.routes.integrations as integrations_route
+
+    monkeypatch.setattr(integrations_route, "_client", lambda: FakePlaidClient())
+    response = client.post("/v1/integrations/plaid/sandbox/connect", json={})
+    assert response.status_code == 200
+    assert response.json()["data"]["forecast_input_enabled"] is True
+    snapshot = client.get("/v1/households/current/snapshot").json()["data"]
+    assert any(account["account_id"] == "plaid_checking" for account in snapshot["accounts"])
+
+
+def test_model_registry_exposes_safe_default_and_training_flash(client):
+    models = client.get("/v1/models")
+    assert models.status_code == 200
+    by_id = {model["id"]: model for model in models.json()["data"]}
+    assert by_id["deterministic"]["status"] == "active"
+    assert by_id["deterministic"]["selectable"] is True
+    assert by_id["mini"]["selectable"] is False
+    assert by_id["flash"]["status"] == "training"
+
+
+def test_unavailable_shadow_preview_fails_explicitly(client):
+    response = client.post("/v1/models/preview?model=mini")
+    assert response.status_code == 503
 
 
 def test_approving_unknown_package_returns_404(client):

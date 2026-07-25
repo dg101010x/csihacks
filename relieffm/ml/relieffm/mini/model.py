@@ -33,6 +33,7 @@ from .trajectory_heads import TrajectoryHeads
 @dataclass
 class MiniOutput:
     household_embedding: torch.Tensor
+    distress_logits: torch.Tensor
     distress_probabilities: torch.Tensor
     reason_factors: torch.Tensor
     baseline_trajectory: dict[str, torch.Tensor]
@@ -80,7 +81,8 @@ class ReliefFMMini(nn.Module):
     def forward(self, batch: dict[str, torch.Tensor], n_scenarios: int, include_intervention: bool = True) -> MiniOutput:
         household_embedding, memory, memory_mask, context_vec, mlm_out = self.encode(batch)
 
-        distress = self.distress_heads(household_embedding, batch["engineered_features"])
+        distress_logits = self.distress_heads(household_embedding, batch["engineered_features"])
+        distress = torch.sigmoid(distress_logits)
         reason_factors = self.reason_factor_head(household_embedding)
 
         B = household_embedding.shape[0]
@@ -100,6 +102,7 @@ class ReliefFMMini(nn.Module):
 
         return MiniOutput(
             household_embedding=household_embedding,
+            distress_logits=distress_logits,
             distress_probabilities=distress,
             reason_factors=reason_factors,
             baseline_trajectory=baseline_trajectory,

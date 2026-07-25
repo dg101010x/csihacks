@@ -81,6 +81,7 @@ def test_mini_model_forward_backward_small():
     batch, _ = _build_batch(4, seed=42, config=config)
     model = ReliefFMMini(config)
     out = model(batch, n_scenarios=2, include_intervention=True)
+    assert torch.allclose(out.distress_probabilities, torch.sigmoid(out.distress_logits))
     losses = compute_mini_loss(out, batch)
     assert torch.isfinite(losses["total"])
     losses["total"].backward()

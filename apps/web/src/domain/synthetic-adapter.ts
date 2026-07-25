@@ -20,6 +20,7 @@ import type {
   ForecastPoint,
   InterventionPackage,
   ModelEvidence,
+  ForecastModel,
   ProviderAction,
   ProviderStatus,
   RiskWindow,
@@ -35,14 +36,14 @@ import type {
  * change when Plan One ships live endpoints — see docs/ui_architecture.md.
  */
 
-function evidenceFrom(forecast: Pick<ForecastResponseV1, "confidence" | "generated_at" | "provider_version" | "is_stale">): ModelEvidence {
+function evidenceFrom(forecast: Pick<ForecastResponseV1, "confidence" | "generated_at" | "provider" | "provider_version" | "is_stale">): ModelEvidence {
   return {
     model_version: forecast.provider_version,
     confidence: forecast.confidence,
     generated_at: forecast.generated_at,
     source_refs: ["synthetic_wells_fargo"],
     freshness: forecast.is_stale ? "stale" : "current",
-    status: "simulated",
+    status: forecast.provider === "relieffm" ? "live" : "simulated",
   };
 }
 
@@ -125,9 +126,17 @@ function expandDailySeries(
 }
 
 export async function fetchForecastEnvelope(horizonDays = 30): Promise<{ envelope: ForecastEnvelope; snapshot: HouseholdSnapshotV1 }> {
+  const selectedModel =
+    typeof window === "undefined"
+      ? "deterministic"
+      : (window.localStorage.getItem("relief.forecast-model") ?? "deterministic");
+  const forecastPath =
+    selectedModel === "mini" || selectedModel === "flash"
+      ? `/v1/models/preview?model=${selectedModel}`
+      : "/v1/forecasts";
   const [snapshotRes, forecastRes] = await Promise.all([
     apiGet<HouseholdSnapshotV1>("/v1/households/current/snapshot"),
-    apiPost<ForecastResponseV1>("/v1/forecasts"),
+    apiPost<ForecastResponseV1>(forecastPath),
   ]);
   const snapshot = snapshotRes.data;
   const forecast = forecastRes.data;
@@ -143,10 +152,46 @@ export async function fetchForecastEnvelope(horizonDays = 30): Promise<{ envelop
     reason_factors: forecast.reason_factors,
     valid_until: forecast.valid_until,
     evidence: evidenceFrom(forecast),
-    scenario_active: snapshot.snapshot_id !== "snap_sarah_baseline",
+    scenario_active:
+      snapshot.snapshot_id.includes("_scenario_") || snapshot.snapshot_id.includes("_shock"),
   };
 
   return { envelope, snapshot };
+}
+
+const fallbackModels: ForecastModel[] = [
+  {
+    id: "deterministic",
+    name: "Deterministic safety forecast",
+    status: "active",
+    selectable: true,
+    lifecycle: "active",
+    version: "1.0.0",
+  },
+  {
+    id: "mini",
+    name: "ReliefFM Mini",
+    status: "unavailable",
+    selectable: false,
+    lifecycle: "shadow",
+    version: null,
+  },
+  {
+    id: "flash",
+    name: "ReliefFM Flash",
+    status: "training",
+    selectable: false,
+    lifecycle: "shadow",
+    version: null,
+  },
+];
+
+export async function fetchModelRegistry(): Promise<ForecastModel[]> {
+  try {
+    return (await apiGet<ForecastModel[]>("/v1/models")).data;
+  } catch {
+    return fallbackModels;
+  }
 }
 
 export function deriveRiskWindows(
@@ -380,7 +425,7 @@ export function simulateConstitutionRule(
 }
 
 export async function fetchAuditRecords(): Promise<AuditRecord[]> {
-  const res = await apiGet<AuditEventV1[]>("/v1/audit/case_sarah_01");
+  const res = await apiGet<AuditEventV1[]>("/v1/audit");
   return res.data.map((event) => ({
     id: event.event_id,
     decision_id: event.decision_id,
@@ -403,6 +448,10 @@ export async function fetchAuditRecords(): Promise<AuditRecord[]> {
 export async function fetchProviderStatus(): Promise<ProviderStatus[]> {
   const res = await apiGet<ProviderStatusV1[]>("/v1/providers/status");
   return res.data;
+}
+
+export async function connectPlaidSandbox(): Promise<void> {
+  await apiPost("/v1/integrations/plaid/sandbox/connect", {});
 }
 
 export async function fetchDataTrust(): Promise<DataTrust[]> {

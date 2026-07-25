@@ -22,7 +22,9 @@ export const reliefClient = {
   simulateConstitutionRule: synthetic.simulateConstitutionRule,
   getAuditRecords: synthetic.fetchAuditRecords,
   getProviderStatus: synthetic.fetchProviderStatus,
+  connectPlaidSandbox: synthetic.connectPlaidSandbox,
   getDataTrust: synthetic.fetchDataTrust,
+  getModels: synthetic.fetchModelRegistry,
 };
 
 export const SCENARIO_PRESETS: ScenarioDefinition[] = [

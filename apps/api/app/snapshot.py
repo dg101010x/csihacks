@@ -28,7 +28,11 @@ def assemble_household_snapshot(
 
     snapshot = HouseholdSnapshotV1(
         contract_version="1.0.0",
-        snapshot_id=f"snap_{uuid.uuid4().hex[:12]}",
+        snapshot_id=(
+            f"snap_{household_id}_scenario_{uuid.uuid4().hex[:8]}"
+            if demo_state.is_shocked(household_id)
+            else f"snap_{household_id}_baseline_{uuid.uuid4().hex[:8]}"
+        ),
         household_id=household_id,
         generated_at=as_of,
         timezone="America/Los_Angeles",

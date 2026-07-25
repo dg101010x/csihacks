@@ -21,6 +21,9 @@ class AuditStore(ABC):
     @abstractmethod
     def list_for_decision(self, decision_id: str) -> list[AuditEventV1]: ...
 
+    @abstractmethod
+    def list_recent(self, *, limit: int = 100) -> list[AuditEventV1]: ...
+
 
 class InMemoryAuditStore(AuditStore):
     def __init__(self) -> None:
@@ -33,6 +36,9 @@ class InMemoryAuditStore(AuditStore):
     def list_for_decision(self, decision_id: str) -> list[AuditEventV1]:
         matches = [e for e in self._events.values() if e.decision_id == decision_id]
         return sorted(matches, key=lambda e: e.occurred_at)
+
+    def list_recent(self, *, limit: int = 100) -> list[AuditEventV1]:
+        return sorted(self._events.values(), key=lambda event: event.occurred_at, reverse=True)[:limit]
 
 
 class Base(DeclarativeBase):
@@ -118,4 +124,8 @@ class SqlAuditStore(AuditStore):
             .where(AuditEventRow.decision_id == decision_id)
             .order_by(AuditEventRow.occurred_at.asc())
         )
+        return [_row_to_event(row) for row in self._session.scalars(stmt)]
+
+    def list_recent(self, *, limit: int = 100) -> list[AuditEventV1]:
+        stmt = select(AuditEventRow).order_by(AuditEventRow.occurred_at.desc()).limit(limit)
         return [_row_to_event(row) for row in self._session.scalars(stmt)]

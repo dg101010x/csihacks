@@ -204,6 +204,7 @@ def _to_fp32(output):
 
     return replace(
         output,
+        distress_logits=output.distress_logits.float(),
         distress_probabilities=output.distress_probabilities.float(),
         reason_factors=output.reason_factors.float(),
         baseline_trajectory={k: v.float() for k, v in output.baseline_trajectory.items()},
@@ -234,7 +235,7 @@ def compute_mini_loss(output, batch: dict[str, torch.Tensor]) -> dict[str, torch
     traj_loss = trajectory_loss(selected_baseline, targets)
     event_loss = event_set_matching_loss(selected_event_set, batch)
     accounting_loss = accounting_consistency_loss(selected_baseline)
-    distress_loss = F.binary_cross_entropy(output.distress_probabilities, batch["target_distress"])
+    distress_loss = F.binary_cross_entropy_with_logits(output.distress_logits, batch["target_distress"])
 
     intervention_loss = torch.zeros((), device=traj_loss.device)
     if output.intervention_trajectory is not None:

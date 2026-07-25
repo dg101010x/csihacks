@@ -22,6 +22,7 @@ import {
  */
 const state = {
   shocked: false,
+  plaidConnected: false,
   caseStatus: "not_started" as "not_started" | "consumer_approved" | "provider_approved" | "completed",
 };
 
@@ -134,16 +135,50 @@ export const handlers = [
       envelope(
         [
           { provider: "synthetic_wells_fargo", status: "connected", is_simulated: true, last_synced_at: new Date().toISOString() },
-          { provider: "plaid_sandbox", status: "not_connected", is_simulated: true, last_synced_at: null },
+          {
+            provider: "plaid_sandbox",
+            status: state.plaidConnected ? "connected" : "not_connected",
+            is_simulated: true,
+            last_synced_at: state.plaidConnected ? new Date().toISOString() : null,
+          },
         ],
         "req_integrations_01",
+      ),
+    );
+  }),
+  http.post("*/v1/integrations/plaid/sandbox/connect", () => {
+    state.plaidConnected = true;
+    return HttpResponse.json(
+      envelope(
+        {
+          provider: "plaid_sandbox",
+          connection_status: "connected",
+          accounts_available: 12,
+          events_synchronized: 0,
+          last_synced_at: new Date().toISOString(),
+          is_simulated: true,
+          forecast_input_enabled: false,
+        },
+        "req_plaid_connect_01",
       ),
     );
   }),
 
   // Provider status (Providers page)
   http.get("*/v1/providers/status", () => {
-    return HttpResponse.json(envelope(sarahProviderStatus.providers, "req_providers_status_01"));
+    const providers = sarahProviderStatus.providers.map((provider) =>
+      provider.provider_id === "plaid_sandbox" && state.plaidConnected
+        ? {
+            ...provider,
+            connection_status: "connected" as const,
+            accounts_available: 12,
+            last_synced_at: new Date().toISOString(),
+            approval_requirements: "Connected to Plaid Sandbox; data is simulated and read-only.",
+            expected_response_time: "Live sandbox synchronization",
+          }
+        : provider,
+    );
+    return HttpResponse.json(envelope(providers, "req_providers_status_01"));
   }),
 
   // Data trust (Data page)
@@ -155,5 +190,6 @@ export const handlers = [
 /** Resets in-memory demo state between test runs / Storybook stories. */
 export function resetHandlerState() {
   state.shocked = false;
+  state.plaidConnected = false;
   state.caseStatus = "not_started";
 }

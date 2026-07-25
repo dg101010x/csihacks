@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle, StatusBadge, createStatusDescriptor } from "@relief/design-system";
+import { Button, Card, CardContent, CardHeader, CardTitle, StatusBadge, createStatusDescriptor } from "@relief/design-system";
 import { formatDateTime } from "@/lib/format";
 import type { ProviderStatus } from "@/domain/types";
 
@@ -12,7 +12,15 @@ const statusDescriptor = {
  * Section 12 — provider operations. Wells Fargo (synthetic) is presented
  * as a reference institution, never implying an official partnership.
  */
-export function ProviderCard({ provider }: { provider: ProviderStatus }) {
+export function ProviderCard({
+  provider,
+  onConnect,
+  isConnecting = false,
+}: {
+  provider: ProviderStatus;
+  onConnect?: () => void;
+  isConnecting?: boolean;
+}) {
   return (
     <Card>
       <CardHeader className="flex-row items-start justify-between">
@@ -42,6 +50,11 @@ export function ProviderCard({ provider }: { provider: ProviderStatus }) {
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Approval requirements</p>
           <p className="text-sm text-foreground">{provider.approval_requirements}</p>
         </div>
+        {onConnect && provider.connection_status === "disconnected" && (
+          <Button onClick={onConnect} isLoading={isConnecting}>
+            Connect Plaid Sandbox
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

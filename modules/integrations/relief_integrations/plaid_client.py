@@ -34,8 +34,12 @@ class PlaidClient:
         env: Optional[str] = None,
         transport: Optional[httpx.BaseTransport] = None,
     ) -> None:
-        self.client_id = client_id or os.environ.get("PLAID_CLIENT_ID")
-        self.secret = secret or os.environ.get("PLAID_SECRET")
+        # The hackathon starter environment used Plaid's dashboard names
+        # (`CLIENT_ID`/`SANDBOX_SECRET`). Accept those aliases so the checked-in
+        # example and existing local credentials both work without copying a
+        # secret into another file.
+        self.client_id = client_id or os.environ.get("PLAID_CLIENT_ID") or os.environ.get("CLIENT_ID")
+        self.secret = secret or os.environ.get("PLAID_SECRET") or os.environ.get("SANDBOX_SECRET")
         self.env = env or os.environ.get("PLAID_ENV", "sandbox")
         if not self.client_id or not self.secret:
             raise PlaidConfigError(

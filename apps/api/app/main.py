@@ -11,7 +11,7 @@ from .db import SessionLocal, create_all_tables
 from .logging_config import configure_logging
 from .middleware import RequestIdMiddleware
 from .rate_limit import RateLimitMiddleware
-from .routes import audit, constitution, data_trust, demo, forecasts, households, interventions, provider, providers_status
+from .routes import audit, constitution, data_trust, demo, forecasts, households, integrations, interventions, models, provider, providers_status
 from .security import auth_is_enforced, require_api_key
 from .seed import seed_demo_household
 
@@ -49,6 +49,7 @@ app.add_middleware(
 
 for router in (
     households.router,
+    integrations.router,
     forecasts.router,
     demo.router,
     interventions.router,
@@ -57,6 +58,7 @@ for router in (
     audit.router,
     providers_status.router,
     data_trust.router,
+    models.router,
 ):
     app.include_router(router, dependencies=[Depends(require_api_key)])
 

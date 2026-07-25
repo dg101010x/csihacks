@@ -31,6 +31,16 @@ export default function CommandCenterPage() {
     return map;
   }, [forecast.data]);
 
+  if (forecast.isError) {
+    return (
+      <AppShell title="Command Center">
+        <div role="alert" className="rounded-lg border border-risk/30 bg-risk/5 p-4 text-sm text-risk">
+          Forecast data could not be loaded. {forecast.error.message}
+        </div>
+      </AppShell>
+    );
+  }
+
   if (forecast.isLoading || !forecast.data) {
     return (
       <AppShell title="Command Center">

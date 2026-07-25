@@ -24,6 +24,31 @@ services:
       timeout: 5s
       retries: 10
 
+  relieffm-mini:
+    build:
+      context: ../../relieffm
+      dockerfile: integration/Dockerfile.cpu
+    restart: unless-stopped
+    environment:
+      RELIEFFM_CHECKPOINT_DIR: /models/checkpoint
+      RELIEFFM_DEVICE: ${RELIEFFM_DEVICE:-cpu}
+    volumes:
+      - ${RELIEFFM_CHECKPOINT_HOST_DIR:-../../relieffm/runs/mini_20260725_122238/checkpoint}:/models/checkpoint:ro
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import json, urllib.request;
+          assert json.load(urllib.request.urlopen("http://127.0.0.1:8080/model/v1/health"))["status"] == "ok"
+      interval: 20s
+      timeout: 10s
+      retries: 12
+      start_period: 120s
+
   api:
     build:
       context: ../..
@@ -32,16 +57,22 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      relieffm-mini:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql+psycopg://relief:relief@db:5432/relief
       RELIEF_API_KEY: ${RELIEF_API_KEY:-}
       RELIEF_ALLOWED_ORIGINS: ${RELIEF_ALLOWED_ORIGINS:-http://localhost:3000}
       RELIEF_RATE_LIMIT_PER_MINUTE: ${RELIEF_RATE_LIMIT_PER_MINUTE:-120}
       FORECAST_PROVIDER: ${FORECAST_PROVIDER:-deterministic}
-      RELIEFFM_INFERENCE_URL: ${RELIEFFM_INFERENCE_URL:-}
+      RELIEFFM_MINI_URL: ${RELIEFFM_MINI_URL:-http://relieffm-mini:8080}
+      RELIEFFM_FLASH_URL: ${RELIEFFM_FLASH_URL:-}
       PLAID_CLIENT_ID: ${PLAID_CLIENT_ID:-}
       PLAID_SECRET: ${PLAID_SECRET:-}
+      CLIENT_ID: ${CLIENT_ID:-}
+      SANDBOX_SECRET: ${SANDBOX_SECRET:-}
       PLAID_ENV: ${PLAID_ENV:-sandbox}
+      RELIEF_USE_PLAID_FOR_FORECAST: ${RELIEF_USE_PLAID_FOR_FORECAST:-0}
     ports:
       - "8000:8000"
     healthcheck:
@@ -49,6 +80,20 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  web:
+    build:
+      context: ../..
+      dockerfile: infrastructure/containers/web.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      RELIEF_API_URL: http://api:8000
+      NEXT_PUBLIC_USE_MSW: "false"
+    ports:
+      - "3000:3000"
 
 volumes:
   relief_db_data:

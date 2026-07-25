@@ -24,6 +24,16 @@ const nextConfig: NextConfig = {
       { source: "/audit/:id", destination: "/audit", permanent: true },
     ];
   },
+  async rewrites() {
+    const apiOrigin = process.env.RELIEF_API_URL;
+    if (!apiOrigin) return [];
+    return [
+      {
+        source: "/v1/:path*",
+        destination: `${apiOrigin.replace(/\/$/, "")}/v1/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

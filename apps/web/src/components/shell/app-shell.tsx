@@ -9,6 +9,7 @@ import { ScenarioBadge } from "./scenario-badge";
 import { CommandPalette } from "./command-palette";
 import { NotificationCenter } from "./notification-center";
 import { UserMenu } from "./user-menu";
+import { ModelSelector } from "./model-selector";
 
 /**
  * Section 5 — the global application shell. Dense enough to read as
@@ -63,6 +64,7 @@ export function AppShell({ title, children }: { title: string; children: React.R
               <CommandPalette />
             </div>
             <ScenarioBadge />
+            <ModelSelector />
             <div className="hidden sm:flex">
               <EnvironmentIndicator />
             </div>

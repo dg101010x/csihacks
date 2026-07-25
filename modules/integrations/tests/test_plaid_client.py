@@ -10,8 +10,21 @@ from relief_integrations import PlaidClient, PlaidConfigError
 def test_missing_credentials_raise_config_error(monkeypatch):
     monkeypatch.delenv("PLAID_CLIENT_ID", raising=False)
     monkeypatch.delenv("PLAID_SECRET", raising=False)
+    monkeypatch.delenv("CLIENT_ID", raising=False)
+    monkeypatch.delenv("SANDBOX_SECRET", raising=False)
     with pytest.raises(PlaidConfigError):
         PlaidClient()
+
+
+def test_starter_environment_credential_names_are_supported(monkeypatch):
+    monkeypatch.delenv("PLAID_CLIENT_ID", raising=False)
+    monkeypatch.delenv("PLAID_SECRET", raising=False)
+    monkeypatch.setenv("CLIENT_ID", "starter-client")
+    monkeypatch.setenv("SANDBOX_SECRET", "starter-secret")
+    client = PlaidClient()
+    assert client.client_id == "starter-client"
+    assert client.secret == "starter-secret"
+    client.close()
 
 
 def _client_with_transport(handler) -> PlaidClient:

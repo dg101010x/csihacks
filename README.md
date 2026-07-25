@@ -49,15 +49,18 @@ Approval workflow → provider → execution
 
 The model predicts what *might* happen. The platform decides what's actually legal, contractual, and safe to propose. The model never gets to pull the trigger on a real financial action — that's on purpose.
 
-There are always three forecast providers available, swappable via env var, so the front end never has to know or care which one is running:
+The deterministic provider is always the action-driving default. The app also
+exposes customer-selectable ReliefFM shadow previews through the model selector:
 
 ```
-FORECAST_PROVIDER=mock          # static fixtures, for UI dev
-FORECAST_PROVIDER=deterministic # rules-based fallback, always works
-FORECAST_PROVIDER=relieffm      # the actual model
+RELIEFFM_MINI_URL=http://relieffm-mini:8080
+RELIEFFM_FLASH_URL=http://relieffm-flash:8080  # enable after Flash evaluation/deployment
 ```
 
-`services/model_gateway` is Plan Two's side of that switch — it dispatches to whichever provider is requested and falls back to `deterministic` with an explicit warning if `relieffm` is requested but unreachable, rather than failing the request.
+`services/model_gateway` translates Plan Two's public snapshot contract into the
+model service contract, adapts Mini's 60-day output to the requested 30-day
+preview, and reconciles every returned trajectory point. ReliefFM previews never
+drive intervention ranking, provider workflow, or execution.
 
 ## Repo layout
 
@@ -69,7 +72,7 @@ relief/
     workflow_worker/      # staged approval state machine
   services/
     model_gateway/         # Plan Two's only door into the model (mock/deterministic/relieffm dispatch)
-    model_inference/        # model serving (owned by the model team; not built in this checkout)
+    model_inference/        # model serving implementation under relieffm/services/
   packages/
     relief_contracts/       # the shared contract — schemas, types, fixtures (both teams agree here first)
     design_system/
@@ -108,18 +111,36 @@ source .venv/bin/activate
 pip install -e packages/relief_contracts/python
 for m in modules/*/; do pip install -e "$m"; done
 pip install -e services/model_gateway -e apps/workflow_worker -e apps/api
-pytest -q                                    # 108 tests, everything above
+pytest -q                                    # 117 tests, everything above
 uvicorn app.main:app --app-dir apps/api      # http://localhost:8000
 ```
 
-Or via Docker: `docker compose -f infrastructure/deployment/docker-compose.yml up` (Postgres + the API, see that file for env vars).
+For the complete demo stack (Postgres + trained Mini + API + web):
+
+```bash
+docker compose --env-file .env.local \
+  -f infrastructure/deployment/docker-compose.yml up --build
+```
+
+The default checkpoint path is
+`relieffm/runs/mini_20260725_122238/checkpoint`. Override it with
+`RELIEFFM_CHECKPOINT_HOST_DIR` when the checkpoint lives elsewhere. Both
+Plaid naming conventions are supported: `PLAID_CLIENT_ID`/`PLAID_SECRET`
+and the starter environment's `CLIENT_ID`/`SANDBOX_SECRET`. Plaid Sandbox
+stays read-only and separate from the Sarah action forecast by default.
 
 Frontend:
 
 ```bash
 pnpm install
-pnpm dev
+RELIEF_API_URL=http://127.0.0.1:8000 \
+NEXT_PUBLIC_USE_MSW=false \
+pnpm --filter web dev
 ```
+
+The Providers page can create and synchronize a real Plaid Sandbox Item.
+It is visibly labeled simulated and never exposes access tokens to the
+browser.
 
 ## Running ReliefFM (the model) locally
 
@@ -131,20 +152,20 @@ pip install -e .
 pytest tests packages/relief_contracts/tests -q
 ```
 
-The trained checkpoint is stored in GCS rather than Git. Follow [`relieffm/integration/README.md`](relieffm/integration/README.md) to pull and verify it, start the four-endpoint API, and connect Plan Two in shadow mode. Plan Two should still start with `FORECAST_PROVIDER=mock`, then `deterministic`; ReliefFM runs beside the deterministic provider until all activation gates pass.
+The trained checkpoint is stored in GCS rather than Git. Follow [`relieffm/integration/README.md`](relieffm/integration/README.md) to pull and verify it, start the four-endpoint API, and connect Plan Two in shadow mode. The deterministic provider remains the action-driving default; ReliefFM runs beside it as a selectable preview until all activation gates pass.
 
 ## Where things stand
 
 - [x] Shared contracts (`relief_contracts`)
-- [x] Plan Two: every backend module (ledger through deployment infra), apps/api wired end-to-end, 108 tests passing
+- [x] Plan Two: every backend module (ledger through deployment infra), apps/api wired end-to-end, 117 tests passing
 - [x] ReliefSim + deterministic known-event reconciliation
 - [x] ReliefFM Nano trained and evaluated
 - [x] ReliefFM Mini trained and evaluated on 25,000 synthetic households
 - [x] Mini release manifest, JSON Schemas, OpenAPI, and real HTTP fixtures
-- [x] Flash 606M architecture and GPU preflight code
-- [ ] Plan Two ↔ ReliefFM shadow connection and deterministic comparison logging (`services/model_gateway` is ready on Plan Two's side; wiring up a live `RELIEFFM_INFERENCE_URL` against `relieffm/integration/` is next)
+- [x] Flash 606M architecture and full-update GPU preflight
+- [x] Plan Two ↔ ReliefFM Mini shadow connection, model registry, and customer preview selector
 - [ ] Calibration, fairness, robustness, privacy, and live latency gates
-- [ ] Flash training
+- [ ] Flash training and evaluation (active run: `flash_20260725_161100`)
 - [ ] Real DB migrations (Alembic), metrics/alerting — see `infrastructure/database/README.md` and `infrastructure/monitoring/README.md`
 
 Mini beats the seasonal balance baseline, but its distress head loses to the gradient-boosted baseline and its intervention evidence is still weak. ReliefFM is therefore a shadow-only provider and must not drive a user-facing decision yet — Plan Two's deterministic engine is the one actually serving forecasts today.

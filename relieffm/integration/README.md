@@ -1,9 +1,9 @@
 # ReliefFM Mini integration handoff
 
-This directory is the Plan One handoff for connecting the trained Mini
-checkpoint to Plan Two's model gateway. The only safe launch mode is
-**shadow**: Plan Two continues to display and act on its deterministic
-provider while ReliefFM runs in parallel for comparison and logging.
+This directory is the Plan One handoff for the trained Mini checkpoint.
+Plan Two's model gateway is now wired to these endpoints. The only safe
+launch mode remains **shadow**: Plan Two acts on its deterministic provider
+while customers can select ReliefFM for a labeled forecast preview.
 
 ## Release
 
@@ -65,9 +65,11 @@ RELIEFFM_CHECKPOINT_HOST_DIR="$PWD/runs/mini_20260725_122238/checkpoint" \
 docker compose -f integration/docker-compose.yml up --build
 ```
 
-The image is CUDA-capable, but the checked-in Compose file stays on CPU
-so it runs everywhere. A GPU deployment should add the platform's GPU
-reservation and set `RELIEFFM_DEVICE=cuda`.
+The checked-in Compose file uses `integration/Dockerfile.cpu`, which
+installs PyTorch from the official CPU wheel index and avoids downloading
+CUDA runtimes for a laptop demo. GPU deployments should continue to use
+`infra/gcp/Dockerfile`, add the platform's GPU reservation, and set
+`RELIEFFM_DEVICE=cuda`.
 
 ## Gateway contract
 
@@ -90,6 +92,7 @@ Plan Two should configure:
 
 ```text
 base URL:       http://<relieffm-host>:8080
+environment:    RELIEFFM_MINI_URL
 mode:           shadow
 timeout action: cancel/ignore ReliefFM result and use deterministic provider
 cache key:      snapshot + horizon + scenarios + model/calibration version + intervention
