@@ -21,6 +21,7 @@ dependencies = [
     "relief-audit",
     "relief-integrations",
     "relief-workflow-worker",
+    "relief-model-gateway",
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
     "SQLAlchemy>=2.0",
