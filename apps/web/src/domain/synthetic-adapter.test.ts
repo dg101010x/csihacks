@@ -42,6 +42,7 @@ describe("deriveRiskWindows", () => {
       reason_factors: [],
       valid_until: "2026-07-25T17:00:00Z",
       evidence: baseEvidence,
+      scenario_active: false,
     };
 
     const windows = deriveRiskWindows(envelope, { obligations: [] });
@@ -92,6 +93,7 @@ describe("deriveRiskWindows", () => {
       reason_factors: [],
       valid_until: "2026-07-25T17:00:00Z",
       evidence: baseEvidence,
+      scenario_active: false,
     };
 
     const snapshot = {

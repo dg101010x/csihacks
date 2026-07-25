@@ -7,6 +7,19 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname, "..", ".."),
   },
+  // Old IA (Section 17 of the original spec) redirected to the new 8-route
+  // IA from the redesign brief — see docs/ui_architecture.md.
+  async redirects() {
+    return [
+      { source: "/demo", destination: "/scenario-lab", permanent: true },
+      { source: "/dashboard", destination: "/", permanent: true },
+      { source: "/provider", destination: "/providers", permanent: true },
+      { source: "/provider/cases/:id", destination: "/providers", permanent: true },
+      { source: "/onboarding", destination: "/", permanent: true },
+      { source: "/settings", destination: "/", permanent: true },
+      { source: "/settings/integrations", destination: "/providers", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

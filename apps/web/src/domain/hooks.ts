@@ -28,6 +28,14 @@ export function useForecastEnvelope() {
   });
 }
 
+export function useRiskWindows() {
+  const forecast = useForecastEnvelope();
+  return {
+    ...forecast,
+    data: forecast.data ? reliefClient.getRiskWindows(forecast.data.envelope, forecast.data.snapshot) : undefined,
+  };
+}
+
 export function useInterventionPackages() {
   return useQuery({
     queryKey: keys.interventions(),

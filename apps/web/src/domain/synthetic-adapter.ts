@@ -143,6 +143,7 @@ export async function fetchForecastEnvelope(horizonDays = 30): Promise<{ envelop
     reason_factors: forecast.reason_factors,
     valid_until: forecast.valid_until,
     evidence: evidenceFrom(forecast),
+    scenario_active: snapshot.snapshot_id !== "snap_sarah_baseline",
   };
 
   return { envelope, snapshot };

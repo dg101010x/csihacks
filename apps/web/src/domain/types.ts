@@ -54,6 +54,8 @@ export interface ForecastEnvelope {
   reason_factors: { factor: string; weight: number; description: string }[];
   valid_until: string;
   evidence: ModelEvidence;
+  /** Whether a Scenario Lab scenario is currently applied to this forecast. */
+  scenario_active: boolean;
 }
 
 export interface RiskWindow {

@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./providers";
+import { Providers } from "./app-providers";
 
-const geistSans = Geist({
+// Assigned to the same --font-geist-sans slot design_system/tokens.css
+// already reads as --font-sans's first choice (Section 16: "a clean
+// interface typeface such as Inter" — communicates precision and
+// institutional trust better than a generic geometric sans for this
+// product). Geist Mono stays for amounts, dates, and audit values.
+const interSans = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
@@ -27,7 +32,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${interSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
