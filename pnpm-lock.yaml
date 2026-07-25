@@ -215,6 +215,28 @@ importers:
         specifier: ^2.1.4
         version: 2.1.9(@types/node@22.20.1)(jsdom@25.0.1)(lightningcss@1.32.0)(msw@2.15.0(@types/node@22.20.1)(typescript@5.9.3))
 
+  packages/test_fixtures:
+    dependencies:
+      '@relief/contracts':
+        specifier: workspace:*
+        version: link:../relief_contracts
+      msw:
+        specifier: ^2.6.4
+        version: 2.15.0(@types/node@22.20.1)(typescript@5.9.3)
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+    devDependencies:
+      '@relief/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript_config
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.4
+        version: 2.1.9(@types/node@22.20.1)(jsdom@25.0.1)(lightningcss@1.32.0)(msw@2.15.0(@types/node@22.20.1)(typescript@5.9.3))
+
   packages/typescript_config: {}
 
 packages:
@@ -5197,7 +5219,6 @@ snapshots:
       '@inquirer/type': 4.0.7(@types/node@22.20.1)
     optionalDependencies:
       '@types/node': 22.20.1
-    optional: true
 
   '@inquirer/core@11.2.1(@types/node@20.19.43)':
     dependencies:
@@ -5222,7 +5243,6 @@ snapshots:
       signal-exit: 4.1.0
     optionalDependencies:
       '@types/node': 22.20.1
-    optional: true
 
   '@inquirer/figures@2.0.7': {}
 
@@ -5233,7 +5253,6 @@ snapshots:
   '@inquirer/type@4.0.7(@types/node@22.20.1)':
     optionalDependencies:
       '@types/node': 22.20.1
-    optional: true
 
   '@isaacs/cliui@8.0.2':
     dependencies:
@@ -7987,7 +8006,6 @@ snapshots:
       typescript: 5.9.3
     transitivePeerDependencies:
       - '@types/node'
-    optional: true
 
   mute-stream@3.0.0: {}
 

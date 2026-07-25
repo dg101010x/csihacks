@@ -1,0 +1,110 @@
+{
+  "simulation_request": {
+    "contract_version": "1.0.0",
+    "simulation_id": "sim_sarah_01",
+    "base_forecast_id": "forecast_sarah_shock",
+    "household_snapshot_id": "snap_sarah_shock",
+    "interventions": [
+      {
+        "action_type": "split_payment",
+        "obligation_id": "obl_car_01",
+        "parameters": {
+          "first_payment_cents": 12000,
+          "second_payment_cents": 12000,
+          "second_payment_date": "2026-08-07"
+        }
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "package_id": "int_sarah_recommended",
+      "label": "Recommended balance",
+      "actions": [
+        {
+          "action_id": "action_split_payment_01",
+          "action_type": "split_payment",
+          "obligation_id": "obl_car_01",
+          "display_name": "Split the auto loan payment",
+          "parameters": {
+            "first_payment_cents": 12000,
+            "second_payment_cents": 12000,
+            "second_payment_date": "2026-08-07"
+          },
+          "execution_mode": "simulated",
+          "provider_capability_id": "prov_auto_lender:split_payment",
+          "consumer_status": "pending",
+          "provider_status": "pending"
+        },
+        {
+          "action_id": "action_pause_streaming_01",
+          "action_type": "pause_subscription",
+          "obligation_id": "obl_streaming_01",
+          "display_name": "Pause StreamCo Plus this month",
+          "parameters": { "resume_at": "2026-08-28" },
+          "execution_mode": "consumer_executable",
+          "provider_capability_id": null,
+          "consumer_status": "pending",
+          "provider_status": "not_required"
+        }
+      ],
+      "added_cost_cents": 0,
+      "new_minimum_balance_cents": 53000,
+      "remaining_risk": { "negative_balance": false, "essential_reserve_violation": false },
+      "required_approvals": ["provider:prov_auto_lender", "consumer:obl_streaming_01"]
+    },
+    {
+      "package_id": "int_sarah_lowest_cost",
+      "label": "Lowest added cost",
+      "actions": [
+        {
+          "action_id": "action_pause_streaming_01",
+          "action_type": "pause_subscription",
+          "obligation_id": "obl_streaming_01",
+          "display_name": "Pause StreamCo Plus this month",
+          "parameters": { "resume_at": "2026-08-28" },
+          "execution_mode": "consumer_executable",
+          "provider_capability_id": null,
+          "consumer_status": "pending",
+          "provider_status": "not_required"
+        }
+      ],
+      "added_cost_cents": 0,
+      "new_minimum_balance_cents": 41000,
+      "remaining_risk": { "negative_balance": false, "essential_reserve_violation": true },
+      "required_approvals": ["consumer:obl_streaming_01"]
+    },
+    {
+      "package_id": "int_sarah_lowest_provider_modification",
+      "label": "Lowest provider modification",
+      "actions": [
+        {
+          "action_id": "action_pause_streaming_01",
+          "action_type": "pause_subscription",
+          "obligation_id": "obl_streaming_01",
+          "display_name": "Pause StreamCo Plus this month",
+          "parameters": { "resume_at": "2026-08-28" },
+          "execution_mode": "consumer_executable",
+          "provider_capability_id": null,
+          "consumer_status": "pending",
+          "provider_status": "not_required"
+        },
+        {
+          "action_id": "action_draft_rent_hardship_01",
+          "action_type": "hardship_request",
+          "obligation_id": "obl_rent_01",
+          "display_name": "Draft a hardship inquiry to Meridian Realty",
+          "parameters": { "message_template": "rent_short_delay_inquiry" },
+          "execution_mode": "draft_only",
+          "provider_capability_id": null,
+          "consumer_status": "pending",
+          "provider_status": "not_required"
+        }
+      ],
+      "added_cost_cents": 0,
+      "new_minimum_balance_cents": 41000,
+      "remaining_risk": { "negative_balance": false, "essential_reserve_violation": true },
+      "required_approvals": ["consumer:obl_streaming_01"]
+    }
+  ]
+}

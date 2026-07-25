@@ -1,0 +1,152 @@
+{
+  "case_id": "case_sarah_01",
+  "household_id": "hh_01",
+  "package_id": "int_sarah_recommended",
+  "workflow_status": "executed",
+  "consumer_approval": {
+    "status": "approved",
+    "approved_at": "2026-07-25T16:05:00Z",
+    "approved_action_ids": ["action_split_payment_01", "action_pause_streaming_01"],
+    "request_id": "req_consumer_approve_01"
+  },
+  "provider_approval": {
+    "status": "approved",
+    "approved_at": "2026-07-25T17:00:00Z",
+    "approved_by": "provider_reviewer_01",
+    "request_id": "req_provider_approve_01"
+  },
+  "execution_result": {
+    "execution_mode": "simulated",
+    "executed_at": "2026-07-25T17:05:00Z",
+    "is_simulated": true
+  },
+  "final_resilience_score": {
+    "version": "resilience-v1.0.0",
+    "overall": 79,
+    "confidence": 0.86,
+    "trend": "improving",
+    "components": [
+      { "key": "seven_day_liquidity_coverage", "label": "Seven day liquidity coverage", "weight": 0.3, "score": 86, "confidence": 0.88 },
+      { "key": "fourteen_day_essential_coverage", "label": "Fourteen day essential coverage", "weight": 0.25, "score": 83, "confidence": 0.85 },
+      { "key": "obligation_collision_risk", "label": "Obligation collision risk", "weight": 0.2, "score": 70, "confidence": 0.8 },
+      { "key": "income_stability", "label": "Income stability", "weight": 0.15, "score": 60, "confidence": 0.7 },
+      { "key": "emergency_reserve_coverage", "label": "Emergency reserve coverage", "weight": 0.1, "score": 68, "confidence": 0.75 }
+    ],
+    "primary_weakness": "income_stability",
+    "primary_stabilizing_factor": "seven_day_liquidity_coverage",
+    "data_freshness": "current",
+    "disclosure": "The Financial Resilience Score estimates short term liquidity capacity. It is not a credit score and does not determine eligibility for financial products."
+  },
+  "audit_trail": [
+    {
+      "event_id": "audit_01",
+      "decision_id": "case_sarah_01",
+      "event_type": "case_created",
+      "actor_type": "consumer",
+      "actor_id": "hh_01",
+      "request_id": "req_case_created_01",
+      "occurred_at": "2026-07-25T16:02:00Z",
+      "payload_hash": "sha256:9f2a1c6e0b7d4a3e8f1c5b2a9d6e3f0c1b4a7e2d5c8f1b3e6a9d2c5f8b1e4a7d",
+      "summary": "Case created after income shock recalculation flagged an obligation collision."
+    },
+    {
+      "event_id": "audit_02",
+      "decision_id": "case_sarah_01",
+      "event_type": "forecast_completed",
+      "actor_type": "system",
+      "actor_id": "deterministic_forecast_provider",
+      "request_id": "forecast_req_sarah_shock",
+      "occurred_at": "2026-07-25T16:02:01Z",
+      "payload_hash": "sha256:1a3c5e7f9b2d4a6c8e0f2b4d6a8c0e2f4b6d8a0c2e4f6b8d0a2c4e6f8b0d2a4c",
+      "summary": "Deterministic forecast generated (forecast_sarah_shock), confidence 0.81."
+    },
+    {
+      "event_id": "audit_03",
+      "decision_id": "case_sarah_01",
+      "event_type": "distress_detected",
+      "actor_type": "system",
+      "actor_id": "resilience_module",
+      "request_id": "forecast_req_sarah_shock",
+      "occurred_at": "2026-07-25T16:02:02Z",
+      "payload_hash": "sha256:2b4d6f8a0c2e4f6b8d0a2c4e6f8b0d2a4c6e8f0b2d4a6c8e0f2b4d6a8c0e2f4b",
+      "summary": "Essential reserve violation projected 2026-07-27 (probability 0.81); collision group obl_rent_01 + obl_car_01."
+    },
+    {
+      "event_id": "audit_04",
+      "decision_id": "case_sarah_01",
+      "event_type": "candidates_generated",
+      "actor_type": "system",
+      "actor_id": "interventions_module",
+      "request_id": "req_generate_candidates_01",
+      "occurred_at": "2026-07-25T16:02:30Z",
+      "payload_hash": "sha256:3c5e7f9b1d3a5c7e9f1b3d5a7c9e1f3b5d7a9c1e3f5b7d9a1c3e5f7b9d1a3c5e",
+      "summary": "3 candidate packages generated: int_sarah_recommended, int_sarah_lowest_cost, int_sarah_lowest_provider_modification."
+    },
+    {
+      "event_id": "audit_05",
+      "decision_id": "case_sarah_01",
+      "event_type": "simulations_completed",
+      "actor_type": "system",
+      "actor_id": "deterministic_forecast_provider",
+      "request_id": "sim_sarah_01",
+      "occurred_at": "2026-07-25T16:03:00Z",
+      "payload_hash": "sha256:4d6f8a0c2e4f6b8d0a2c4e6f8b0d2a4c6e8f0b2d4a6c8e0f2b4d6a8c0e2f4b6d",
+      "summary": "All 3 candidates simulated over the 30-day horizon; int_sarah_recommended clears the reserve violation with $0 added cost."
+    },
+    {
+      "event_id": "audit_06",
+      "decision_id": "case_sarah_01",
+      "event_type": "explanation_generated",
+      "actor_type": "system",
+      "actor_id": "langchain_explanation_layer",
+      "request_id": "req_explanation_01",
+      "occurred_at": "2026-07-25T16:03:30Z",
+      "payload_hash": "sha256:5e7f9b1d3a5c7e9f1b3d5a7c9e1f3b5d7a9c1e3f5b7d9a1c3e5f7b9d1a3c5e7f",
+      "summary": "Structured explanation generated and validated against forecast + candidate facts; no prohibited claims."
+    },
+    {
+      "event_id": "audit_07",
+      "decision_id": "case_sarah_01",
+      "event_type": "consumer_approved",
+      "actor_type": "consumer",
+      "actor_id": "hh_01",
+      "request_id": "req_consumer_approve_01",
+      "occurred_at": "2026-07-25T16:05:00Z",
+      "payload_hash": "sha256:6f8a0c2e4f6b8d0a2c4e6f8b0d2a4c6e8f0b2d4a6c8e0f2b4d6a8c0e2f4b6d8a",
+      "summary": "Sarah approved both actions in int_sarah_recommended."
+    },
+    {
+      "event_id": "audit_08",
+      "decision_id": "case_sarah_01",
+      "event_type": "provider_approved",
+      "actor_type": "provider",
+      "actor_id": "provider_reviewer_01",
+      "request_id": "req_provider_approve_01",
+      "occurred_at": "2026-07-25T17:00:00Z",
+      "payload_hash": "sha256:7a9c1e3f5b7d9a1c3e5f7b9d1a3c5e7f9b1d3a5c7e9f1b3d5a7c9e1f3b5d7a9c",
+      "summary": "prov_auto_lender approved the split_payment request citing policy_auto_hardship_01."
+    },
+    {
+      "event_id": "audit_09",
+      "decision_id": "case_sarah_01",
+      "event_type": "action_completed",
+      "actor_type": "system",
+      "actor_id": "workflow_worker",
+      "request_id": "req_execute_01",
+      "occurred_at": "2026-07-25T17:05:00Z",
+      "payload_hash": "sha256:8b0d2a4c6e8f0b2d4a6c8e0f2b4d6a8c0e2f4b6d8a0c2e4f6b8d0a2c4e6f8b0d",
+      "summary": "Both actions executed in simulated mode (execution_mode=simulated, is_simulated=true)."
+    },
+    {
+      "event_id": "audit_10",
+      "decision_id": "case_sarah_01",
+      "event_type": "case_completed",
+      "actor_type": "system",
+      "actor_id": "workflow_worker",
+      "request_id": "req_execute_01",
+      "occurred_at": "2026-07-25T17:05:01Z",
+      "payload_hash": "sha256:9c1e3f5b7d9a1c3e5f7b9d1a3c5e7f9b1d3a5c7e9f1b3d5a7c9e1f3b5d7a9c1e",
+      "summary": "Case closed. Resilience Score recovered from 54 to 79."
+    }
+  ]
+}
