@@ -183,4 +183,21 @@ describe("simulateConstitutionRule", () => {
     expect(result.allowed_package_ids).toEqual(["pkg_ok"]);
     expect(result.blocked_package_ids).toEqual(["pkg_blocked"]);
   });
+
+  it("flags a conflict when the new rule permits an action an existing rule prohibits", () => {
+    const existing = parseConstitutionRule("Never extend a loan if it adds interest.");
+    const draft = parseConstitutionRule("Split the auto loan payment whenever needed.");
+    // Force an overlap for the test regardless of what the heuristic parser extracted.
+    draft.permitted_actions = ["term_extension_with_interest"];
+
+    const result = simulateConstitutionRule(draft, [], [existing]);
+    expect(result.conflicts).toHaveLength(1);
+    expect(result.conflicts[0]!.with_rule_id).toBe(existing.rule_id);
+  });
+
+  it("reports no conflicts against an empty rule set", () => {
+    const draft = parseConstitutionRule("Pause subscriptions when needed.");
+    const result = simulateConstitutionRule(draft, []);
+    expect(result.conflicts).toEqual([]);
+  });
 });

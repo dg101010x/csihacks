@@ -324,7 +324,10 @@ export function parseConstitutionRule(rawText: string): ConstitutionRuleV1 {
   const alwaysAsk = /\bask/.test(lower) || /confirm/.test(lower);
 
   return {
-    rule_id: `draft_${Date.now()}`,
+    // Date.now() alone can collide across rapid successive calls (e.g. two
+    // rules parsed in the same test, or the same UI interaction); add a
+    // random suffix so rule_id is always unique.
+    rule_id: `draft_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     status: "draft",
     raw_text: rawText,
     trigger: scope.length > 0 ? `Any candidate intervention touching: ${scope.join(", ")}.` : "Any candidate intervention.",
@@ -341,7 +344,11 @@ export function parseConstitutionRule(rawText: string): ConstitutionRuleV1 {
   };
 }
 
-export function simulateConstitutionRule(rule: ConstitutionRuleV1, packages: InterventionPackage[]): ConstitutionSimulationResult {
+export function simulateConstitutionRule(
+  rule: ConstitutionRuleV1,
+  packages: InterventionPackage[],
+  existingRules: ConstitutionRuleV1[] = [],
+): ConstitutionSimulationResult {
   const allowed: string[] = [];
   const blocked: string[] = [];
   for (const pkg of packages) {
@@ -352,7 +359,24 @@ export function simulateConstitutionRule(rule: ConstitutionRuleV1, packages: Int
       allowed.push(pkg.id);
     }
   }
-  return { rule, allowed_package_ids: allowed, blocked_package_ids: blocked, conflicts: [] };
+
+  // A conflict is any action this rule permits that an existing rule
+  // prohibits, or vice versa.
+  const conflicts: ConstitutionSimulationResult["conflicts"] = [];
+  for (const existing of existingRules) {
+    if (existing.rule_id === rule.rule_id) continue;
+    const permittedButProhibited = rule.permitted_actions.filter((a) => existing.prohibited_actions.includes(a));
+    const prohibitedButPermitted = rule.prohibited_actions.filter((a) => existing.permitted_actions.includes(a));
+    const overlap = [...permittedButProhibited, ...prohibitedButPermitted];
+    if (overlap.length > 0) {
+      conflicts.push({
+        with_rule_id: existing.rule_id,
+        description: `Conflicts with an existing rule over: ${overlap.join(", ")}.`,
+      });
+    }
+  }
+
+  return { rule, allowed_package_ids: allowed, blocked_package_ids: blocked, conflicts };
 }
 
 export async function fetchAuditRecords(): Promise<AuditRecord[]> {
