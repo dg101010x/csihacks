@@ -27,11 +27,17 @@ def _daily_rate_cents(obligation: ObligationV1) -> float:
     return obligation.scheduled_amount_cents / period_days
 
 
-def compute_essential_reserve_cents(obligations: list[ObligationV1]) -> int:
-    """A week of essential (housing/utilities/insurance/secured-debt/medical)
-    burn rate, prorated from each obligation's recurrence period — the
-    minimum cushion the forecast treats as "safe" (Section 45's
-    essential_reserve_cents)."""
+def essential_daily_burn_rate_cents(obligations: list[ObligationV1]) -> float:
+    """Sum of essential (housing/utilities/insurance/secured-debt/medical)
+    obligations prorated to a daily rate. Shared with modules/resilience so
+    both derive "how much essential spending per day" from the same
+    essentiality threshold instead of duplicating the cutoff."""
     essential = [o for o in obligations if o.essentiality_score >= _ESSENTIAL_THRESHOLD and o.status == "active"]
-    daily_rate = sum(_daily_rate_cents(o) for o in essential)
+    return sum(_daily_rate_cents(o) for o in essential)
+
+
+def compute_essential_reserve_cents(obligations: list[ObligationV1]) -> int:
+    """A week of essential burn rate — the minimum cushion the forecast
+    treats as "safe" (Section 45's essential_reserve_cents)."""
+    daily_rate = essential_daily_burn_rate_cents(obligations)
     return max(_RESERVE_FLOOR_CENTS, round(daily_rate * _RESERVE_WINDOW_DAYS))
