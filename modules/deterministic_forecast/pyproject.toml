@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "relief-deterministic-forecast"
+version = "0.1.0"
+description = "Relief Plan Two — deterministic (non-ML) forecast provider (Section 8, Section 11)."
+requires-python = ">=3.9"
+dependencies = ["relief-contracts", "relief-recurring-detection"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["relief_deterministic_forecast"]

@@ -18,6 +18,11 @@ _FREQUENCY_BANDS: list[tuple[str, float, float]] = [
     ("FREQ=YEARLY", 350.0, 380.0),
 ]
 
+# The inverse mapping — a FREQ rule's typical period in days. Used by any
+# consumer (deterministic_forecast, resilience) that needs to project an
+# obligation's next occurrence or convert a scheduled amount to a daily rate.
+FREQ_PERIOD_DAYS: dict[str, float] = {rule: (low + high) / 2 for rule, low, high in _FREQUENCY_BANDS}
+
 
 @dataclass
 class RecurringPattern:
