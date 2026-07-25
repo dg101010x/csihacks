@@ -49,6 +49,7 @@ export const InterventionActionV1 = z.object({
   consumer_status: z.enum(["pending", "approved", "rejected"]),
   provider_status: z.enum(["pending", "approved", "rejected", "not_required"]),
 });
+export type InterventionActionV1 = z.infer<typeof InterventionActionV1>;
 
 export const InterventionCandidateV1 = z.object({
   package_id: z.string(),
