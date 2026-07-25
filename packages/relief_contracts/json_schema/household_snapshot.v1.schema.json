@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relief.dev/schemas/household_snapshot.v1.schema.json",
+  "title": "HouseholdSnapshotV1",
+  "type": "object",
+  "required": [
+    "contract_version", "snapshot_id", "household_id", "generated_at", "timezone",
+    "currency", "accounts", "obligations", "recent_events", "known_future_events",
+    "consumer_constitution", "provider_capabilities"
+  ],
+  "properties": {
+    "contract_version": { "$ref": "definitions.v1.schema.json#/$defs/ContractVersion" },
+    "snapshot_id": { "type": "string" },
+    "household_id": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "timezone": { "type": "string" },
+    "currency": { "$ref": "definitions.v1.schema.json#/$defs/Currency" },
+    "accounts": { "type": "array", "items": { "$ref": "definitions.v1.schema.json#/$defs/Account" } },
+    "obligations": { "type": "array", "items": { "$ref": "definitions.v1.schema.json#/$defs/Obligation" } },
+    "recent_events": { "type": "array", "items": { "$ref": "financial_event.v1.schema.json" } },
+    "known_future_events": { "type": "array", "items": { "$ref": "financial_event.v1.schema.json" } },
+    "consumer_constitution": { "$ref": "definitions.v1.schema.json#/$defs/ConsumerConstitution" },
+    "provider_capabilities": { "type": "array", "items": { "$ref": "definitions.v1.schema.json#/$defs/ProviderCapability" } }
+  },
+  "additionalProperties": false
+}

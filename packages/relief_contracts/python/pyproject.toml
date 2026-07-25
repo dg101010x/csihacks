@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "relief-contracts"
+version = "1.0.0"
+description = "Versioned contract package shared between Plan One (ReliefFM) and Plan Two (platform). No application logic or model code."
+requires-python = ">=3.9"
+dependencies = ["pydantic>=2.7,<3"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0", "jsonschema>=4.22"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["relief_contracts"]

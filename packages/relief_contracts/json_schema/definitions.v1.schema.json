@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relief.dev/schemas/definitions.v1.schema.json",
+  "$defs": {
+    "MoneyCents": { "type": "integer" },
+    "ContractVersion": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "Currency": { "type": "string", "minLength": 3, "maxLength": 3 },
+    "Account": {
+      "type": "object",
+      "required": [
+        "account_id", "provider", "account_type", "account_subtype", "display_name",
+        "current_balance_cents", "available_balance_cents", "balance_updated_at",
+        "data_status", "is_simulated"
+      ],
+      "properties": {
+        "account_id": { "type": "string" },
+        "provider": { "type": "string" },
+        "account_type": { "type": "string" },
+        "account_subtype": { "type": ["string", "null"] },
+        "display_name": { "type": "string" },
+        "current_balance_cents": { "$ref": "#/$defs/MoneyCents" },
+        "available_balance_cents": { "type": ["integer", "null"] },
+        "balance_updated_at": { "type": "string", "format": "date-time" },
+        "data_status": { "enum": ["current", "stale", "unavailable"] },
+        "is_simulated": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "Obligation": {
+      "type": "object",
+      "required": [
+        "obligation_id", "provider_id", "obligation_type", "display_name",
+        "principal_balance_cents", "scheduled_amount_cents", "next_due_at",
+        "recurrence_rule", "essentiality_score", "status", "source_confidence",
+        "consumer_confirmed"
+      ],
+      "properties": {
+        "obligation_id": { "type": "string" },
+        "provider_id": { "type": ["string", "null"] },
+        "obligation_type": { "type": "string" },
+        "display_name": { "type": "string" },
+        "principal_balance_cents": { "type": ["integer", "null"] },
+        "scheduled_amount_cents": { "$ref": "#/$defs/MoneyCents" },
+        "next_due_at": { "type": ["string", "null"], "format": "date-time" },
+        "recurrence_rule": { "type": ["string", "null"] },
+        "essentiality_score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "status": { "enum": ["active", "paused", "closed"] },
+        "source_confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "consumer_confirmed": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "ProviderCapability": {
+      "type": "object",
+      "required": [
+        "provider_id", "product_type", "action_type", "eligibility_rule",
+        "cost_rule", "timing_rule", "evidence_source", "effective_from",
+        "effective_until", "is_simulated"
+      ],
+      "properties": {
+        "provider_id": { "type": "string" },
+        "product_type": { "type": "string" },
+        "action_type": { "type": "string" },
+        "eligibility_rule": { "type": ["string", "null"] },
+        "cost_rule": { "type": ["string", "null"] },
+        "timing_rule": { "type": ["string", "null"] },
+        "evidence_source": {
+          "enum": [
+            "provider_structured_policy", "provider_published_policy_document",
+            "confirmed_product_contract", "consumer_supplied_contract_information",
+            "simulated_demonstration_policy", "unknown"
+          ]
+        },
+        "effective_from": { "type": ["string", "null"], "format": "date-time" },
+        "effective_until": { "type": ["string", "null"], "format": "date-time" },
+        "is_simulated": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "ConsumerConstitution": {
+      "type": "object",
+      "required": [
+        "version", "protected_categories", "allow_term_extension",
+        "maximum_added_interest_cents", "require_confirmation_for_subscriptions"
+      ],
+      "properties": {
+        "version": { "type": "integer", "minimum": 0 },
+        "protected_categories": { "type": "array", "items": { "type": "string" } },
+        "allow_term_extension": { "type": "boolean" },
+        "maximum_added_interest_cents": { "$ref": "#/$defs/MoneyCents" },
+        "require_confirmation_for_subscriptions": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "DailySummaryEntry": {
+      "type": "object",
+      "required": [
+        "event_date", "median_ending_balance_cents", "lower_ending_balance_cents",
+        "upper_ending_balance_cents", "reserve_violation_probability"
+      ],
+      "properties": {
+        "event_date": { "type": "string", "format": "date" },
+        "median_ending_balance_cents": { "$ref": "#/$defs/MoneyCents" },
+        "lower_ending_balance_cents": { "$ref": "#/$defs/MoneyCents" },
+        "upper_ending_balance_cents": { "$ref": "#/$defs/MoneyCents" },
+        "reserve_violation_probability": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "TrajectoryPoint": {
+      "type": "object",
+      "required": [
+        "scenario_index", "event_date", "starting_balance_cents", "inflow_cents",
+        "outflow_cents", "ending_balance_cents", "essential_reserve_cents"
+      ],
+      "properties": {
+        "scenario_index": { "type": "integer", "minimum": 0 },
+        "event_date": { "type": "string", "format": "date" },
+        "starting_balance_cents": { "$ref": "#/$defs/MoneyCents" },
+        "inflow_cents": { "$ref": "#/$defs/MoneyCents" },
+        "outflow_cents": { "$ref": "#/$defs/MoneyCents" },
+        "ending_balance_cents": { "$ref": "#/$defs/MoneyCents" },
+        "essential_reserve_cents": { "$ref": "#/$defs/MoneyCents" }
+      },
+      "additionalProperties": false
+    },
+    "ReasonFactor": {
+      "type": "object",
+      "required": ["factor", "weight", "description"],
+      "properties": {
+        "factor": { "type": "string" },
+        "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+        "description": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
