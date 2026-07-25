@@ -8,6 +8,7 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .db import SessionLocal, create_all_tables
+from .logging_config import configure_logging
 from .middleware import RequestIdMiddleware
 from .rate_limit import RateLimitMiddleware
 from .routes import audit, constitution, data_trust, demo, forecasts, households, interventions, provider, providers_status
@@ -19,6 +20,7 @@ logger = logging.getLogger("relief_api")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    configure_logging()
     if not auth_is_enforced():
         logger.warning(
             "RELIEF_API_KEY is not set — /v1/* routes are unauthenticated. "
