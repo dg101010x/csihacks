@@ -10,12 +10,18 @@ import {
   sarahInterventionOptions,
   sarahProviderApproval,
   sarahCompletedCase,
+  sarahConstitution,
+  sarahProviderStatus,
+  sarahDataTrust,
   ResilienceScoreV1,
   InterventionCandidateV1,
   ConsumerApprovalV1,
   ProviderApprovalV1,
   ProviderCaseV1,
   AuditEventV1,
+  ConstitutionRuleV1,
+  ProviderStatusV1,
+  DataTrustV1,
 } from "../src";
 
 // Section 24: "Each fixture must validate against relief_contracts."
@@ -96,5 +102,28 @@ describe("The income shock is exactly $380.00 (Section 16.3)", () => {
     const shocked = sarahIncomeShock.trigger_event.amount_cents;
     expect(original - shocked).toBe(38000);
     expect(shocked).toBe(172000);
+  });
+});
+
+describe("Constitution, provider status, and data trust fixtures (redesign brief)", () => {
+  it("constitution rules and starter rules", () => {
+    for (const rule of sarahConstitution.rules) {
+      expect(() => ConstitutionRuleV1.parse(rule)).not.toThrow();
+    }
+    for (const rule of sarahConstitution.starter_rules) {
+      expect(() => ConstitutionRuleV1.parse(rule)).not.toThrow();
+    }
+  });
+
+  it("provider status", () => {
+    for (const provider of sarahProviderStatus.providers) {
+      expect(() => ProviderStatusV1.parse(provider)).not.toThrow();
+    }
+  });
+
+  it("data trust", () => {
+    for (const source of sarahDataTrust.sources) {
+      expect(() => DataTrustV1.parse(source)).not.toThrow();
+    }
   });
 });

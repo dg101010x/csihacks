@@ -53,6 +53,7 @@ export const InterventionActionV1 = z.object({
 export const InterventionCandidateV1 = z.object({
   package_id: z.string(),
   label: z.string(),
+  description: z.string(),
   actions: z.array(InterventionActionV1),
   added_cost_cents: z.number().int(),
   new_minimum_balance_cents: z.number().int(),
@@ -61,6 +62,12 @@ export const InterventionCandidateV1 = z.object({
     essential_reserve_violation: z.boolean(),
   }),
   required_approvals: z.array(z.string()),
+  user_effort: z.enum(["low", "medium", "high"]),
+  provider_acceptance_probability: z.number().min(0).max(1).nullable(),
+  reversibility: z.enum(["fully_reversible", "partially_reversible", "irreversible"]),
+  constitution_compatible: z.boolean(),
+  confidence: z.number().min(0).max(1),
+  ranking_reason: z.string(),
 });
 export type InterventionCandidateV1 = z.infer<typeof InterventionCandidateV1>;
 
@@ -106,5 +113,70 @@ export const AuditEventV1 = z.object({
   occurred_at: z.string().datetime({ offset: true }),
   payload_hash: z.string(),
   summary: z.string(),
+  reason: z.string(),
+  evidence: z.array(z.string()),
+  before_state: z.string().nullable(),
+  after_state: z.string().nullable(),
+  related_model_version: z.string().nullable(),
+  related_data_sources: z.array(z.string()),
+  related_constitution_rule_id: z.string().nullable(),
 });
 export type AuditEventV1 = z.infer<typeof AuditEventV1>;
+
+/**
+ * ConstitutionRuleV1 (Section 71's structured interpretation, extended per
+ * the redesign brief's Constitution page: trigger, scope, permitted/
+ * prohibited actions, approval requirement, monetary cap, expiration,
+ * priority, exceptions, confidence).
+ */
+export const ConstitutionRuleV1 = z.object({
+  rule_id: z.string(),
+  status: z.enum(["draft", "active"]),
+  raw_text: z.string(),
+  trigger: z.string(),
+  scope: z.array(z.string()),
+  permitted_actions: z.array(z.string()),
+  prohibited_actions: z.array(z.string()),
+  approval_requirement: z.enum(["none", "consumer_confirmation", "always_ask"]),
+  maximum_monetary_impact_cents: z.number().int().nullable(),
+  expiration: z.string().nullable(),
+  priority: z.number().int(),
+  exceptions: z.array(z.string()),
+  confidence: z.number().min(0).max(1),
+  created_at: z.string().datetime({ offset: true }),
+});
+export type ConstitutionRuleV1 = z.infer<typeof ConstitutionRuleV1>;
+
+/** Section 76 integration status + Section 72 adapter capabilities. */
+export const ProviderStatusV1 = z.object({
+  provider_id: z.string(),
+  display_name: z.string(),
+  connection_status: z.enum(["connected", "degraded", "disconnected"]),
+  accounts_available: z.number().int(),
+  last_synced_at: z.string().datetime({ offset: true }),
+  supported_actions: z.array(z.string()),
+  unsupported_actions: z.array(z.string()),
+  approval_requirements: z.string(),
+  expected_response_time: z.string(),
+  pending_requests: z.number().int(),
+  is_simulated: z.boolean(),
+});
+export type ProviderStatusV1 = z.infer<typeof ProviderStatusV1>;
+
+/** Section 26/76 freshness + Section 96 model trust, surfaced for the consumer. */
+export const DataTrustV1 = z.object({
+  source: z.string(),
+  last_refresh_at: z.string().datetime({ offset: true }),
+  coverage_start: z.string(),
+  coverage_end: z.string(),
+  missing_data_notes: z.array(z.string()),
+  stale: z.boolean(),
+  duplicate_events_detected: z.number().int(),
+  event_classification_confidence: z.number().min(0).max(1),
+  forecast_provider: z.string(),
+  forecast_provider_version: z.string(),
+  relieffm_version: z.string().nullable(),
+  calibration_summary: z.string().nullable(),
+  known_limitations: z.array(z.string()),
+});
+export type DataTrustV1 = z.infer<typeof DataTrustV1>;

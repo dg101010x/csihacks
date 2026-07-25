@@ -20,6 +20,7 @@
     {
       "package_id": "int_sarah_recommended",
       "label": "Recommended balance",
+      "description": "Split the auto loan payment into two installments and pause StreamCo Plus for one billing cycle. Clears the reserve violation entirely with no added cost.",
       "actions": [
         {
           "action_id": "action_split_payment_01",
@@ -51,11 +52,18 @@
       "added_cost_cents": 0,
       "new_minimum_balance_cents": 53000,
       "remaining_risk": { "negative_balance": false, "essential_reserve_violation": false },
-      "required_approvals": ["provider:prov_auto_lender", "consumer:obl_streaming_01"]
+      "required_approvals": ["provider:prov_auto_lender", "consumer:obl_streaming_01"],
+      "user_effort": "low",
+      "provider_acceptance_probability": 0.78,
+      "reversibility": "partially_reversible",
+      "constitution_compatible": true,
+      "confidence": 0.85,
+      "ranking_reason": "Fully clears the projected reserve violation at zero added cost, and both actions are within Sarah's constitution (housing/groceries/medicine/transportation protected, subscriptions require confirmation — this one asks)."
     },
     {
       "package_id": "int_sarah_lowest_cost",
       "label": "Lowest added cost",
+      "description": "Pause StreamCo Plus for one billing cycle. Reduces but does not eliminate the reserve violation.",
       "actions": [
         {
           "action_id": "action_pause_streaming_01",
@@ -72,11 +80,18 @@
       "added_cost_cents": 0,
       "new_minimum_balance_cents": 41000,
       "remaining_risk": { "negative_balance": false, "essential_reserve_violation": true },
-      "required_approvals": ["consumer:obl_streaming_01"]
+      "required_approvals": ["consumer:obl_streaming_01"],
+      "user_effort": "low",
+      "provider_acceptance_probability": null,
+      "reversibility": "fully_reversible",
+      "constitution_compatible": true,
+      "confidence": 0.9,
+      "ranking_reason": "Cheapest and simplest option, but leaves the essential reserve violation unresolved — a reasonable fallback, not the recommendation."
     },
     {
       "package_id": "int_sarah_lowest_provider_modification",
       "label": "Lowest provider modification",
+      "description": "Pause StreamCo Plus and draft (but do not send) a hardship inquiry to Meridian Realty for later use.",
       "actions": [
         {
           "action_id": "action_pause_streaming_01",
@@ -104,7 +119,13 @@
       "added_cost_cents": 0,
       "new_minimum_balance_cents": 41000,
       "remaining_risk": { "negative_balance": false, "essential_reserve_violation": true },
-      "required_approvals": ["consumer:obl_streaming_01"]
+      "required_approvals": ["consumer:obl_streaming_01"],
+      "user_effort": "medium",
+      "provider_acceptance_probability": null,
+      "reversibility": "fully_reversible",
+      "constitution_compatible": true,
+      "confidence": 0.72,
+      "ranking_reason": "Avoids any auto lender modification, but the drafted hardship request is not sent automatically and the reserve violation remains unresolved unless Sarah follows up herself."
     }
   ]
 }

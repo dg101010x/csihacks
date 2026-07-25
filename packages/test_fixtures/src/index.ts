@@ -5,6 +5,9 @@ import sarahIncomeShockJson from "../fixtures/sarah_income_shock.json";
 import sarahInterventionOptionsJson from "../fixtures/sarah_intervention_options.json";
 import sarahProviderApprovalJson from "../fixtures/sarah_provider_approval.json";
 import sarahCompletedCaseJson from "../fixtures/sarah_completed_case.json";
+import sarahConstitutionJson from "../fixtures/sarah_constitution.json";
+import sarahProviderStatusJson from "../fixtures/sarah_provider_status.json";
+import sarahDataTrustJson from "../fixtures/sarah_data_trust.json";
 
 /**
  * The Sarah persona fixtures (Section 24). Each one is a realistic,
@@ -18,3 +21,6 @@ export const sarahIncomeShock = sarahIncomeShockJson;
 export const sarahInterventionOptions = sarahInterventionOptionsJson;
 export const sarahProviderApproval = sarahProviderApprovalJson;
 export const sarahCompletedCase = sarahCompletedCaseJson;
+export const sarahConstitution = sarahConstitutionJson;
+export const sarahProviderStatus = sarahProviderStatusJson;
+export const sarahDataTrust = sarahDataTrustJson;

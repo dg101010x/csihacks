@@ -5,6 +5,9 @@ import {
   sarahInterventionOptions,
   sarahProviderApproval,
   sarahCompletedCase,
+  sarahConstitution,
+  sarahProviderStatus,
+  sarahDataTrust,
 } from "../src/index";
 
 /**
@@ -121,6 +124,9 @@ export const handlers = [
     const fixture = state.shocked ? sarahIncomeShock : sarahBaseline;
     return HttpResponse.json(envelope(fixture.household_snapshot.consumer_constitution, "req_constitution_01"));
   }),
+  http.get("*/v1/constitution/rules", () => {
+    return HttpResponse.json(envelope(sarahConstitution, "req_constitution_rules_01"));
+  }),
 
   // Integration status
   http.get("*/v1/integrations/status", () => {
@@ -133,6 +139,16 @@ export const handlers = [
         "req_integrations_01",
       ),
     );
+  }),
+
+  // Provider status (Providers page)
+  http.get("*/v1/providers/status", () => {
+    return HttpResponse.json(envelope(sarahProviderStatus.providers, "req_providers_status_01"));
+  }),
+
+  // Data trust (Data page)
+  http.get("*/v1/data/trust", () => {
+    return HttpResponse.json(envelope(sarahDataTrust.sources, "req_data_trust_01"));
   }),
 ];
 
