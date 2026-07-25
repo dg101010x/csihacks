@@ -1,0 +1,530 @@
+{
+  "$defs": {
+    "AccountState": {
+      "additionalProperties": false,
+      "description": "12.2 Account state token.",
+      "properties": {
+        "account_id": {
+          "title": "Account Id",
+          "type": "string"
+        },
+        "account_subtype": {
+          "default": "",
+          "title": "Account Subtype",
+          "type": "string"
+        },
+        "account_type": {
+          "$ref": "#/$defs/AccountType"
+        },
+        "available_balance_cents": {
+          "title": "Available Balance Cents",
+          "type": "integer"
+        },
+        "credit_limit_cents": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Credit Limit Cents"
+        },
+        "current_balance_cents": {
+          "title": "Current Balance Cents",
+          "type": "integer"
+        },
+        "data_freshness_hours": {
+          "minimum": 0,
+          "title": "Data Freshness Hours",
+          "type": "number"
+        },
+        "institution_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Institution Ref"
+        }
+      },
+      "required": [
+        "account_id",
+        "account_type",
+        "current_balance_cents",
+        "available_balance_cents",
+        "data_freshness_hours"
+      ],
+      "title": "AccountState",
+      "type": "object"
+    },
+    "AccountType": {
+      "enum": [
+        "checking",
+        "savings",
+        "credit_card",
+        "loan",
+        "brokerage"
+      ],
+      "title": "AccountType",
+      "type": "string"
+    },
+    "Direction": {
+      "enum": [
+        "inflow",
+        "outflow"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "EssentialityCategory": {
+      "enum": [
+        "essential",
+        "discretionary"
+      ],
+      "title": "EssentialityCategory",
+      "type": "string"
+    },
+    "EventStatus": {
+      "enum": [
+        "posted",
+        "pending",
+        "scheduled",
+        "cancelled",
+        "failed"
+      ],
+      "title": "EventStatus",
+      "type": "string"
+    },
+    "EventType": {
+      "enum": [
+        "paycheck",
+        "rent_payment",
+        "mortgage_payment",
+        "auto_loan_payment",
+        "personal_loan_payment",
+        "credit_card_payment",
+        "insurance_premium",
+        "utility_bill",
+        "subscription",
+        "bnpl_payment",
+        "medical_payment",
+        "transfer",
+        "fee",
+        "refund",
+        "purchase",
+        "deposit",
+        "withdrawal",
+        "shock_expense",
+        "other"
+      ],
+      "title": "EventType",
+      "type": "string"
+    },
+    "HistoricalEvent": {
+      "additionalProperties": false,
+      "description": "12.3 Observed financial event token.",
+      "properties": {
+        "account_id": {
+          "title": "Account Id",
+          "type": "string"
+        },
+        "amount_cents": {
+          "title": "Amount Cents",
+          "type": "integer"
+        },
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "effective_time": {
+          "format": "date-time",
+          "title": "Effective Time",
+          "type": "string"
+        },
+        "event_id": {
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_status": {
+          "$ref": "#/$defs/EventStatus"
+        },
+        "event_type": {
+          "$ref": "#/$defs/EventType"
+        },
+        "merchant_category": {
+          "default": "unknown",
+          "title": "Merchant Category",
+          "type": "string"
+        },
+        "occurrence_time": {
+          "format": "date-time",
+          "title": "Occurrence Time",
+          "type": "string"
+        },
+        "recurrence_state": {
+          "$ref": "#/$defs/RecurrenceState",
+          "default": "none"
+        },
+        "source_type": {
+          "$ref": "#/$defs/SourceType",
+          "default": "simulated"
+        },
+        "transaction_confidence": {
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Transaction Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "event_id",
+        "event_type",
+        "event_status",
+        "amount_cents",
+        "direction",
+        "account_id",
+        "occurrence_time",
+        "effective_time"
+      ],
+      "title": "HistoricalEvent",
+      "type": "object"
+    },
+    "HouseholdSnapshotV1": {
+      "additionalProperties": false,
+      "properties": {
+        "accounts": {
+          "items": {
+            "$ref": "#/$defs/AccountState"
+          },
+          "title": "Accounts",
+          "type": "array"
+        },
+        "as_of": {
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "historical_events": {
+          "items": {
+            "$ref": "#/$defs/HistoricalEvent"
+          },
+          "title": "Historical Events",
+          "type": "array"
+        },
+        "household_id": {
+          "title": "Household Id",
+          "type": "string"
+        },
+        "household_state": {
+          "$ref": "#/$defs/HouseholdState"
+        },
+        "known_future_events": {
+          "items": {
+            "$ref": "#/$defs/KnownFutureEvent"
+          },
+          "title": "Known Future Events",
+          "type": "array"
+        },
+        "obligations": {
+          "items": {
+            "$ref": "#/$defs/Obligation"
+          },
+          "title": "Obligations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "household_id",
+        "currency",
+        "as_of",
+        "household_state"
+      ],
+      "title": "HouseholdSnapshotV1",
+      "type": "object"
+    },
+    "HouseholdState": {
+      "additionalProperties": false,
+      "description": "12.1 Household state token.",
+      "properties": {
+        "available_balance_cents": {
+          "title": "Available Balance Cents",
+          "type": "integer"
+        },
+        "data_freshness_hours": {
+          "minimum": 0,
+          "title": "Data Freshness Hours",
+          "type": "number"
+        },
+        "essential_reserve_cents": {
+          "minimum": 0,
+          "title": "Essential Reserve Cents",
+          "type": "integer"
+        },
+        "num_accounts": {
+          "minimum": 0,
+          "title": "Num Accounts",
+          "type": "integer"
+        },
+        "num_obligations": {
+          "minimum": 0,
+          "title": "Num Obligations",
+          "type": "integer"
+        },
+        "snapshot_completeness": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Snapshot Completeness",
+          "type": "number"
+        },
+        "total_liquid_balance_cents": {
+          "title": "Total Liquid Balance Cents",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total_liquid_balance_cents",
+        "available_balance_cents",
+        "num_accounts",
+        "num_obligations",
+        "essential_reserve_cents",
+        "data_freshness_hours",
+        "snapshot_completeness"
+      ],
+      "title": "HouseholdState",
+      "type": "object"
+    },
+    "KnownFutureEvent": {
+      "additionalProperties": false,
+      "description": "12.5 Known future event token. Constraint, not a prediction target.",
+      "properties": {
+        "account_id": {
+          "title": "Account Id",
+          "type": "string"
+        },
+        "amount_cents": {
+          "title": "Amount Cents",
+          "type": "integer"
+        },
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "effective_time": {
+          "format": "date-time",
+          "title": "Effective Time",
+          "type": "string"
+        },
+        "event_id": {
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "$ref": "#/$defs/EventType"
+        },
+        "obligation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Obligation Id"
+        },
+        "source": {
+          "$ref": "#/$defs/KnownFutureEventSource"
+        }
+      },
+      "required": [
+        "event_id",
+        "event_type",
+        "amount_cents",
+        "direction",
+        "account_id",
+        "effective_time",
+        "source"
+      ],
+      "title": "KnownFutureEvent",
+      "type": "object"
+    },
+    "KnownFutureEventSource": {
+      "enum": [
+        "confirmed_paycheck",
+        "scheduled_loan_payment",
+        "confirmed_rent_payment",
+        "confirmed_insurance_premium",
+        "approved_intervention_event"
+      ],
+      "title": "KnownFutureEventSource",
+      "type": "string"
+    },
+    "Obligation": {
+      "additionalProperties": false,
+      "description": "12.4 Obligation token. Not a prediction target \u2014 a constraint.",
+      "properties": {
+        "account_id": {
+          "title": "Account Id",
+          "type": "string"
+        },
+        "due_date": {
+          "format": "date-time",
+          "title": "Due Date",
+          "type": "string"
+        },
+        "essentiality_category": {
+          "$ref": "#/$defs/EssentialityCategory"
+        },
+        "obligation_id": {
+          "title": "Obligation Id",
+          "type": "string"
+        },
+        "obligation_type": {
+          "$ref": "#/$defs/ObligationType"
+        },
+        "payment_status": {
+          "$ref": "#/$defs/PaymentStatus",
+          "default": "current"
+        },
+        "provider_capability_known": {
+          "default": false,
+          "title": "Provider Capability Known",
+          "type": "boolean"
+        },
+        "recurrence": {
+          "$ref": "#/$defs/RecurrenceState"
+        },
+        "remaining_principal_cents": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Remaining Principal Cents"
+        },
+        "scheduled_amount_cents": {
+          "exclusiveMinimum": 0,
+          "title": "Scheduled Amount Cents",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "obligation_id",
+        "obligation_type",
+        "scheduled_amount_cents",
+        "due_date",
+        "recurrence",
+        "essentiality_category",
+        "account_id"
+      ],
+      "title": "Obligation",
+      "type": "object"
+    },
+    "ObligationType": {
+      "enum": [
+        "rent",
+        "mortgage",
+        "auto_loan",
+        "personal_loan",
+        "credit_card_minimum",
+        "insurance_premium",
+        "utility",
+        "subscription",
+        "bnpl",
+        "medical_payment_plan"
+      ],
+      "title": "ObligationType",
+      "type": "string"
+    },
+    "PaymentStatus": {
+      "enum": [
+        "current",
+        "late",
+        "missed",
+        "in_hardship_program"
+      ],
+      "title": "PaymentStatus",
+      "type": "string"
+    },
+    "RecurrenceState": {
+      "enum": [
+        "none",
+        "weekly",
+        "biweekly",
+        "semimonthly",
+        "monthly",
+        "irregular"
+      ],
+      "title": "RecurrenceState",
+      "type": "string"
+    },
+    "SourceType": {
+      "enum": [
+        "bank_feed",
+        "card_feed",
+        "manual",
+        "simulated",
+        "provider_confirmed"
+      ],
+      "title": "SourceType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "horizon_days": {
+      "exclusiveMinimum": 0,
+      "maximum": 180,
+      "title": "Horizon Days",
+      "type": "integer"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "requested_outputs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Requested Outputs",
+      "type": "array"
+    },
+    "scenario_count": {
+      "maximum": 256,
+      "minimum": 0,
+      "title": "Scenario Count",
+      "type": "integer"
+    },
+    "snapshot": {
+      "$ref": "#/$defs/HouseholdSnapshotV1"
+    }
+  },
+  "required": [
+    "contract_version",
+    "request_id",
+    "snapshot",
+    "horizon_days",
+    "scenario_count"
+  ],
+  "title": "ForecastRequestV1",
+  "type": "object"
+}

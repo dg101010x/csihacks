@@ -1,0 +1,89 @@
+{
+  "$defs": {
+    "ModelLifecycleState": {
+      "enum": [
+        "experimental",
+        "candidate",
+        "shadow",
+        "limited",
+        "active",
+        "deprecated",
+        "retired"
+      ],
+      "title": "ModelLifecycleState",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "calibration_version": {
+      "title": "Calibration Version",
+      "type": "string"
+    },
+    "contract_versions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Contract Versions",
+      "type": "array"
+    },
+    "intended_use": {
+      "default": "household cash flow trajectory forecasting",
+      "title": "Intended Use",
+      "type": "string"
+    },
+    "maximum_scenarios": {
+      "default": 32,
+      "title": "Maximum Scenarios",
+      "type": "integer"
+    },
+    "model_family": {
+      "default": "relieffm",
+      "title": "Model Family",
+      "type": "string"
+    },
+    "model_name": {
+      "title": "Model Name",
+      "type": "string"
+    },
+    "model_size": {
+      "default": "nano",
+      "title": "Model Size",
+      "type": "string"
+    },
+    "model_version": {
+      "title": "Model Version",
+      "type": "string"
+    },
+    "prohibited_use": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Prohibited Use",
+      "type": "array"
+    },
+    "status": {
+      "$ref": "#/$defs/ModelLifecycleState",
+      "default": "experimental"
+    },
+    "supported_horizons": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Supported Horizons",
+      "type": "array"
+    },
+    "training_data_version": {
+      "title": "Training Data Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "model_name",
+    "model_version",
+    "training_data_version",
+    "calibration_version"
+  ],
+  "title": "ModelMetadataV1",
+  "type": "object"
+}
