@@ -23,14 +23,20 @@ export function AuditLedgerTable({ records, onSelect }: { records: AuditRecord[]
               {records.map((record) => (
                 <tr
                   key={record.id}
-                  onClick={() => onSelect(record)}
-                  className="cursor-pointer border-b border-border transition-colors duration-fast last:border-0 hover:bg-accent"
+                  className="border-b border-border transition-colors duration-fast last:border-0 hover:bg-accent"
                 >
                   <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-muted-foreground">
                     {formatDateTime(record.occurred_at)}
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 font-medium text-foreground">
-                    {record.event_type.replaceAll("_", " ")}
+                    <button
+                      type="button"
+                      onClick={() => onSelect(record)}
+                      className="min-h-11 text-left font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      aria-label={`View details for ${record.event_type.replaceAll("_", " ")}`}
+                    >
+                      {record.event_type.replaceAll("_", " ")}
+                    </button>
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">{record.actor_type}</td>
                   <td className="px-4 py-3 text-foreground">{record.summary}</td>

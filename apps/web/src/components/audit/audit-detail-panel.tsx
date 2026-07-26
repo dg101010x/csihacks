@@ -7,11 +7,18 @@ import type { AuditRecord } from "@/domain/types";
 
 /** Section 11 — the evidence panel opened by selecting an audit record. */
 export function AuditDetailPanel({ record, onClose }: { record: AuditRecord; onClose: () => void }) {
+  const titleId = `audit-detail-title-${record.id}`;
+
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-deep-ink/40 p-4">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      className="fixed inset-0 z-40 flex items-center justify-center bg-deep-ink/40 p-4"
+    >
       <Card className="w-full max-w-lg max-h-[85vh] overflow-y-auto">
         <CardHeader className="flex-row items-start justify-between">
-          <CardTitle>{humanize(record.event_type)}</CardTitle>
+          <CardTitle id={titleId}>{humanize(record.event_type)}</CardTitle>
           <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close">
             <X className="size-4" aria-hidden="true" />
           </Button>
