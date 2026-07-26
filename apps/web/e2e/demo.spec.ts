@@ -1,6 +1,13 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Relief demonstration journey", () => {
+  test.describe.configure({ mode: "serial" });
+
+  test.beforeEach(async ({ request }) => {
+    const response = await request.post("/v1/demo/reset");
+    expect(response.ok()).toBe(true);
+  });
+
   test("renders the baseline command center", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Command Center" })).toBeVisible();
