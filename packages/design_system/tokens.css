@@ -21,7 +21,12 @@
   --color-foreground: var(--color-deep-ink);
   --color-primary: var(--color-trust-blue);
   --color-primary-foreground: #FFFFFF;
+  --color-secondary: #F3F4F6;
+  --secondary-surface: #F3F4F6;
+  --secondary-foreground: var(--color-deep-ink);
   --color-muted-foreground: var(--color-slate);
+  --color-accent: var(--color-trust-blue);
+  --accent-foreground: #FFFFFF;
   --color-positive: var(--color-relief-mint);
   --color-caution: var(--color-signal-amber);
   --color-risk: var(--color-risk-coral);
@@ -73,4 +78,6 @@
   --color-foreground: var(--color-porcelain);
   --color-surface: #111A2B;
   --color-border: #24304A;
+  --secondary-surface: #1F2A3C;
+  --secondary-foreground: var(--color-porcelain);
 }
