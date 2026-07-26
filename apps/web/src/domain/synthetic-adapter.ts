@@ -352,7 +352,7 @@ export function parseConstitutionRule(rawText: string): ConstitutionRuleV1 {
   if (/rent|housing/.test(lower)) scope.push("housing");
   if (/grocer/.test(lower)) scope.push("groceries");
   if (/medic|health/.test(lower)) scope.push("medicine");
-  if (/transport|car|auto/.test(lower)) scope.push("transportation");
+  if (/transport|\bcar\b|\bauto(?:mobile)?\b/.test(lower)) scope.push("transportation");
   if (/subscri/.test(lower)) scope.push("subscriptions");
   if (/loan|interest/.test(lower)) scope.push("loans");
 
@@ -367,6 +367,7 @@ export function parseConstitutionRule(rawText: string): ConstitutionRuleV1 {
   const maxImpact = amountMatch ? Math.round(parseFloat(amountMatch[1]!) * 100) : null;
 
   const alwaysAsk = /\bask/.test(lower) || /confirm/.test(lower);
+  const automatic = /\bautomatic(?:ally)?\b/.test(lower);
 
   return {
     // Date.now() alone can collide across rapid successive calls (e.g. two
@@ -379,7 +380,7 @@ export function parseConstitutionRule(rawText: string): ConstitutionRuleV1 {
     scope: scope.length > 0 ? scope : ["all"],
     permitted_actions: permitted,
     prohibited_actions: prohibited,
-    approval_requirement: alwaysAsk ? "always_ask" : "consumer_confirmation",
+    approval_requirement: alwaysAsk ? "always_ask" : automatic ? "none" : "consumer_confirmation",
     maximum_monetary_impact_cents: maxImpact,
     expiration: null,
     priority: 5,
