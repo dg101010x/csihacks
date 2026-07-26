@@ -44,7 +44,7 @@ export function NavRail({ onNavigate }: { onNavigate?: () => void }) {
             aria-current={active ? "page" : undefined}
             onClick={onNavigate}
             className={cn(
-              "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-fast",
+              "flex min-h-11 items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-fast",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
               active
                 ? "bg-sidebar-accent text-sidebar-accent-foreground"

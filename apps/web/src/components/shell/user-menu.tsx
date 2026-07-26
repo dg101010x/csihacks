@@ -18,7 +18,7 @@ export function UserMenu({ name = "Sarah" }: { name?: string }) {
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-foreground transition-colors duration-fast hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="flex min-h-11 items-center gap-2 rounded-md px-2 text-sm text-foreground transition-colors duration-fast hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         <span
           aria-hidden="true"
@@ -26,8 +26,8 @@ export function UserMenu({ name = "Sarah" }: { name?: string }) {
         >
           {name.charAt(0)}
         </span>
-        <span>{name}</span>
-        <ChevronDown className="size-3.5 text-muted-foreground" aria-hidden="true" />
+        <span className="hidden sm:inline">{name}</span>
+        <ChevronDown className="hidden size-3.5 text-muted-foreground sm:block" aria-hidden="true" />
       </button>
 
       {open && (
@@ -42,7 +42,7 @@ export function UserMenu({ name = "Sarah" }: { name?: string }) {
               reset.mutate();
               setOpen(false);
             }}
-            className="flex w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm text-foreground transition-colors duration-fast hover:bg-accent"
+            className="flex min-h-11 w-full items-center gap-2 rounded-sm px-2 py-2 text-left text-sm text-foreground transition-colors duration-fast hover:bg-accent"
           >
             <RotateCcw className="size-4" aria-hidden="true" />
             Reset demo

@@ -48,7 +48,7 @@ export function NotificationCenter() {
         aria-haspopup="true"
         aria-expanded={open}
         aria-label={`Notifications${items.length > 0 ? ` (${items.length} unread)` : ""}`}
-        className="relative flex size-8 items-center justify-center rounded-md text-foreground transition-colors duration-fast hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="relative flex size-11 items-center justify-center rounded-md text-foreground transition-colors duration-fast hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         <Bell className="size-4" aria-hidden="true" />
         {items.length > 0 && (
@@ -72,7 +72,7 @@ export function NotificationCenter() {
                     type="button"
                     aria-label="Dismiss"
                     onClick={() => setDismissed((prev) => new Set(prev).add(item.id))}
-                    className="shrink-0 rounded-sm p-1 text-muted-foreground hover:bg-border/60"
+                    className="flex size-11 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-border/60"
                   >
                     <X className="size-3.5" aria-hidden="true" />
                   </button>

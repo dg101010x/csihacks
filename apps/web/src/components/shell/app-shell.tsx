@@ -35,7 +35,7 @@ export function AppShell({ title, children }: { title: string; children: React.R
             type="button"
             aria-label="Close navigation"
             onClick={() => setDrawerOpen(false)}
-            className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-md bg-surface text-foreground"
+            className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-md bg-surface text-foreground"
           >
             <X className="size-4" aria-hidden="true" />
           </button>
@@ -49,7 +49,7 @@ export function AppShell({ title, children }: { title: string; children: React.R
               type="button"
               aria-label="Open navigation"
               onClick={() => setDrawerOpen(true)}
-              className="flex size-8 items-center justify-center rounded-md text-foreground hover:bg-accent lg:hidden"
+              className="flex size-11 items-center justify-center rounded-md text-foreground hover:bg-accent lg:hidden"
             >
               <Menu className="size-4" aria-hidden="true" />
             </button>
@@ -59,7 +59,7 @@ export function AppShell({ title, children }: { title: string; children: React.R
             </div>
           </div>
 
-          <div className="flex flex-1 items-center justify-end gap-2 sm:flex-initial">
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:flex-initial">
             <div className="hidden md:block">
               <CommandPalette />
             </div>

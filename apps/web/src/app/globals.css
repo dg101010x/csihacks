@@ -100,6 +100,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --color-background: var(--color-deep-ink);
   --color-foreground: var(--color-porcelain);
   --color-surface: #111A2B;

@@ -30,11 +30,11 @@ export function ModelSelector() {
   const effectiveSelection = current?.selectable === false ? "deterministic" : selected;
 
   return (
-    <label className="hidden items-center gap-2 rounded-md border border-border bg-surface px-2 py-1.5 text-xs text-muted-foreground xl:flex">
-      <span className="whitespace-nowrap">Forecast model</span>
+    <label className="flex min-h-11 min-w-0 items-center gap-2 rounded-md border border-border bg-surface px-2 text-xs text-muted-foreground">
+      <span className="sr-only whitespace-nowrap xl:not-sr-only">Forecast model</span>
       <select
         aria-label="Forecast model"
-        className="max-w-52 bg-transparent font-medium text-foreground outline-none"
+        className="min-w-0 max-w-28 bg-transparent font-medium text-foreground outline-none sm:max-w-44 xl:max-w-52"
         value={effectiveSelection}
         onChange={(event) => {
           const value = event.target.value;
