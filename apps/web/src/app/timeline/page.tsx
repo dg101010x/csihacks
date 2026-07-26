@@ -35,6 +35,9 @@ export default function TimelinePage() {
     <AppShell title="Timeline">
       <div className="relative flex flex-col gap-4">
         <div className="rounded-lg border border-border bg-surface p-4">
+          <p className="mb-2 text-xs text-muted-foreground">
+            Forecast confidence {Math.round(envelope.evidence.confidence * 100)}%
+          </p>
           <ForecastChart envelope={envelope} riskWindows={windows} height={420} onSelectPoint={setSelectedPoint} />
         </div>
 

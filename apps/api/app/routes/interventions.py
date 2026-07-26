@@ -46,6 +46,20 @@ def _get_package(household_id: str, package_id: str) -> InterventionCandidateV1:
     return package
 
 
+def clear_household_packages(household_id: str) -> None:
+    """Called by /v1/demo/reset. Package IDs are re-derived deterministically
+    from the live snapshot on every /generate call, so a demo reset that
+    only clears the shock flag (demo_state.reset_demo) leaves this
+    in-process cache — and the SQL-persisted workflow/case state keyed by
+    those same IDs — stale from the previous run. A second approve() call
+    then finds a package already past 'review' and 409s on the transition.
+    """
+    removed_ids = set(_packages_by_household.pop(household_id, {}).keys())
+    for case_id, package_id in list(_case_to_package.items()):
+        if package_id in removed_ids:
+            del _case_to_package[case_id]
+
+
 @router.post("/{intervention_id}/approve")
 def approve_intervention(
     intervention_id: str,
