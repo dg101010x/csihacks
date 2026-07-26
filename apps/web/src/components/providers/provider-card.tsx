@@ -43,7 +43,7 @@ export function ProviderCard({
         <div className="flex-1">
           <CardTitle className="text-lg">{provider.display_name}</CardTitle>
           <p className="mt-1 text-sm text-foreground">
-            Relief can read balances and transactions from this source.
+            {providerSummary(provider)}
           </p>
           <p className="mt-2 text-xs text-muted-foreground">
             Last checked {formatDateTime(provider.last_synced_at)}
@@ -110,4 +110,18 @@ function Field({ label, value }: { label: string; value: string }) {
       <dd className="text-sm font-medium text-foreground">{value}</dd>
     </div>
   );
+}
+
+function providerSummary(provider: ProviderStatus): string {
+  if (provider.connection_status === "disconnected") {
+    return "Connect this source to make its financial data available to Relief.";
+  }
+  if (
+    provider.supported_actions.some((action) =>
+      ["get_balances", "get_transactions", "transaction_sync"].includes(action),
+    )
+  ) {
+    return "Relief can read balances and transactions from this source.";
+  }
+  return "Relief can request the supported account actions from this source.";
 }
